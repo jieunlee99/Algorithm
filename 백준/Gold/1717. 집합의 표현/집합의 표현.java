@@ -1,56 +1,60 @@
-import java.io.BufferedReader;
-//import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
 
 	static int N, M;
 	static int[] parent;
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
-//		System.setIn(new FileInputStream("src/DAY06/P1717/input.txt"));
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
-		
-		parent = new int[N+1];
-		for(int i=0; i<=N; i++) {
+
+		// 부모 배열 초기화
+		parent = new int[N + 1];
+		for (int i = 0; i <= N; i++) {
 			parent[i] = i;
 		}
 
-		int op, a, b;
-		int aRoot, bRoot;
+		StringBuilder sb = new StringBuilder();
 		for (int m = 0; m < M; m++) {
 			st = new StringTokenizer(br.readLine());
-			op = Integer.parseInt(st.nextToken());
-			a = Integer.parseInt(st.nextToken());
-			b = Integer.parseInt(st.nextToken());
-			
-			aRoot = find(a);
-			bRoot = find(b);
-			
-			// 합집합
-			if(op == 0) {
-				parent[aRoot] = bRoot;
-			} 
-			// 두 원소가 같은 집합에 포함되어 있는지 확인
-			else if(op == 1) {
-				// 같은 집합에 포함되어 있다면 "YES", 그렇지 않다면 "NO" 출력
-				if(aRoot == bRoot) {
-					System.out.println("YES");
+			int op = Integer.parseInt(st.nextToken());
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+
+			if (op == 0) {
+				union(a, b);
+			} else if (op == 1) {
+				if (find(a) == find(b)) {
+					sb.append("YES\n");
 				} else {
-					System.out.println("NO");
+					sb.append("NO\n");
 				}
 			}
 		}
+
+		System.out.print(sb.toString());
 	}
-	
+
+	// find 함수: 경로 압축 적용
 	static int find(int num) {
-		if(parent[num] == num) return num;
-		else return parent[num] = find(parent[num]);
+		if (parent[num] != num) {
+			parent[num] = find(parent[num]); // 경로 압축
+		}
+		return parent[num];
+	}
+
+	// union 함수: 두 원소를 합치는 연산
+	static void union(int a, int b) {
+		int aRoot = find(a);
+		int bRoot = find(b);
+
+		if (aRoot != bRoot) {
+			parent[aRoot] = bRoot;
+		}
 	}
 }
