@@ -1,25 +1,19 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Stack;
-import java.util.StringTokenizer;
-
-// LIS
+import java.util.*;
+import java.io.*;
 
 public class Main {
 
 	static int N;
+
 	static int[] nums;
 	static int[] dp;
+	static int[] trace; 
+
 	static int cnt;
-	
-	static int[] trace;
 
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-//		System.setIn(new FileInputStream("src/DAY10/P14003/input.txt"));
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
 		N = Integer.parseInt(br.readLine());
 
@@ -27,17 +21,20 @@ public class Main {
 		dp = new int[N];
 		trace = new int[N];
 
+		// 입력 받기
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++) {
 			nums[i] = Integer.parseInt(st.nextToken());
 		}
 
+        // LIS
+        
 		cnt = 0;
 		dp[0] = nums[0];
-
+		
 		for (int i = 0; i < N; i++) {
-			if(nums[i] > dp[cnt]) {
-				dp[++cnt]  = nums[i];
+			if (nums[i] > dp[cnt]) {
+				dp[++cnt] = nums[i];
 				trace[i] = cnt;
 			} else {
 				int lb = lowerbound(nums[i]);
@@ -46,41 +43,42 @@ public class Main {
 			}
 		}
 
-//		System.out.println(Arrays.toString(dp));
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(cnt+1).append("\n");
-		
+		bw.write(cnt + 1 + "\n");
+
 		Stack<Integer> stack = new Stack<>();
-		for(int i=N-1; i>=0; i--) {
-			if(trace[i] == cnt) {
+		for (int i = N - 1; i >= 0; i--) {
+			if (trace[i] == cnt) {
 				stack.push(nums[i]);
 				cnt--;
 			}
+		}
 
+		while (!stack.isEmpty()) {
+			bw.write(stack.pop() + " ");
 		}
-		
-		while(!stack.isEmpty()) {
-			sb.append(stack.pop()).append(" ");
-		}
-		System.out.println(sb.toString());
+		bw.write("\n");
+
+		bw.flush();
+
+		bw.close();
+		br.close();
 	}
 
+	// binary search
+
 	static int lowerbound(int num) {
-		
 		int mid;
-		int left = 0;
-		int right = cnt;
-		
-		while(left < right) {
-			mid = (left+right)/2;
-			if(dp[mid] >= num) {
+		int left = 0, right = cnt;
+
+		while (left < right) {
+			mid = (left + right) / 2;
+			if (dp[mid] >= num) {
 				right = mid;
 			} else {
-				left = mid+1;
+				left = mid + 1;
 			}
 		}
-		
+
 		return right;
 	}
 }
