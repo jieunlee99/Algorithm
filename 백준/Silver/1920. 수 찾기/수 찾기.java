@@ -1,40 +1,54 @@
-// package P1920;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    static int N, M;
+	static int N, M;
+	static int[] arr;
 
-    public static void main(String[] args) throws Exception {
-        // System.setIn(new FileInputStream("src/P1920/input.txt"));
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
+		
+		N = Integer.parseInt(br.readLine());
 
-        N = Integer.parseInt(br.readLine());
+		arr = new int[N];
 
-        HashSet<Integer> set = new HashSet<>();
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for(int i=0; i<N; i++) {
-            set.add(Integer.parseInt(st.nextToken()));
-        }
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		for (int i = 0; i < N; i++) {
+			arr[i] = Integer.parseInt(st.nextToken());
+		}
+		
+		Arrays.sort(arr);
 
-        M = Integer.parseInt(br.readLine());
+		M = Integer.parseInt(br.readLine());
+		
+		st = new StringTokenizer(br.readLine());
+		for(int i=0; i<M; i++) {
+			int num = Integer.parseInt(st.nextToken());
+			boolean result = isExist(num);
+			sb.append(result ? 1 : 0).append("\n");
+		}
+		
+		System.out.print(sb.toString());
+				
+	}
 
-        StringBuilder sb = new StringBuilder();
-        st = new StringTokenizer(br.readLine());
-        for(int i=0; i<M; i++) {
-            int num = Integer.parseInt(st.nextToken());
-            if(set.contains(num)) {
-                sb.append(1).append("\n");
-            } else {
-                sb.append(0).append("\n");
-            }
-        }
+	static boolean isExist(int num) {
+		int start = 0, end = N - 1;
+		int mid;
 
-        System.out.print(sb.toString());
-    }
+		while (start <= end) {
+			mid = (start + end) / 2;
+			if (arr[mid] == num) {
+				return true;
+			} else if (arr[mid] < num) {
+				start = mid + 1;
+			} else {
+				end = mid-1;
+			}
+		}
+
+		return false;
+	}
 }
