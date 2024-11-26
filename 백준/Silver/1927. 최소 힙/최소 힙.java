@@ -1,37 +1,33 @@
 
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.PriorityQueue;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    static int N;
+	static int N;
 
-    public static void main(String[] args) throws Exception {
-        // System.setIn(new FileInputStream("src/P1927/input.txt"));
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
 
-        N = Integer.parseInt(br.readLine());
+		N = Integer.parseInt(br.readLine());
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
+		PriorityQueue<Integer> pq = new PriorityQueue<>();
 
-        for(int i=0; i<N; i++) {
-            int x = Integer.parseInt(br.readLine());
+		for (int i = 0; i < N; i++) {
+			int num = Integer.parseInt(br.readLine());
+			if (num == 0) {
+				if (pq.isEmpty()) {
+					sb.append(0).append("\n");
+				} else {
+					sb.append(pq.poll()).append("\n");
+				}
+			} else {
+				pq.offer(num);
+			}
+		}
 
-            if(x == 0) {
-                if(!pq.isEmpty()) {
-                    sb.append(pq.poll()).append("\n");
-                } else {
-                    sb.append(0).append("\n");
-                }
-            } else {
-                pq.add(x);
-            }
-        }
+		System.out.println(sb.toString());
+	}
 
-        System.out.print(sb);
-    }
 }
