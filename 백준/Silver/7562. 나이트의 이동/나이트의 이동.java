@@ -3,86 +3,72 @@ import java.util.*;
 
 public class Main {
 
-	static int T, I;
-	static boolean[][] visited;
-	static final int[] dx = { 2, 2, -2, -2, 1, 1, -1, -1 };
-	static final int[] dy = { 1, -1, 1, -1, 2, -2, 2, -2 };
+    static int T, I;
+    static boolean[][] visited;
+    static final int[] dx = { 2, 2, -2, -2, 1, 1, -1, -1 };
+    static final int[] dy = { 1, -1, 1, -1, 2, -2, 2, -2 };
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-		T = Integer.parseInt(br.readLine());
+        T = Integer.parseInt(br.readLine());
 
-		while (T-- > 0) {
+        while (T-- > 0) {
+            I = Integer.parseInt(br.readLine());
 
-			I = Integer.parseInt(br.readLine());
+            visited = new boolean[I][I];
 
-			visited = new boolean[I][I];
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int fromX = Integer.parseInt(st.nextToken());
+            int fromY = Integer.parseInt(st.nextToken());
 
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			int fromX = Integer.parseInt(st.nextToken());
-			int fromY = Integer.parseInt(st.nextToken());
+            st = new StringTokenizer(br.readLine());
+            int toX = Integer.parseInt(st.nextToken());
+            int toY = Integer.parseInt(st.nextToken());
 
-			st = new StringTokenizer(br.readLine());
-			int toX = Integer.parseInt(st.nextToken());
-			int toY = Integer.parseInt(st.nextToken());
+            sb.append(bfs(fromX, fromY, toX, toY)).append("\n");
+        }
 
-			Pos from = new Pos(fromX, fromY);
-			Pos to = new Pos(toX, toY);
+        System.out.print(sb);
+    }
 
-			sb.append(bfs(from, to)).append("\n");
+    static int bfs(int fromX, int fromY, int toX, int toY) {
+        if (fromX == toX && fromY == toY) return 0;
 
-		}
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[] { fromX, fromY });
+        visited[fromX][fromY] = true;
 
-		System.out.println(sb.toString());
-	}
+        int depth = 0;
 
-	static int bfs(Pos from, Pos to) {
+        while (!queue.isEmpty()) {
+            int size = queue.size();
 
-		int cnt = 0;
+            for (int i = 0; i < size; i++) {
+                int[] current = queue.poll();
+                int x = current[0], y = current[1];
 
-		Queue<Pos> queue = new LinkedList<>();
+                for (int d = 0; d < 8; d++) {
+                    int nx = x + dx[d];
+                    int ny = y + dy[d];
 
-		visited[from.x][from.y] = true;
-		queue.add(from);
+                    if (nx == toX && ny == toY) {
+                        return depth + 1; 
+                    }
 
-		while (!queue.isEmpty()) {
-			int size = queue.size();
+                    if (isInRange(nx, ny) && !visited[nx][ny]) {
+                        visited[nx][ny] = true;
+                        queue.add(new int[] { nx, ny });
+                    }
+                }
+            }
+            depth++;
+        }
+        return -1; 
+    }
 
-			for (int s = 0; s < size; s++) {
-				Pos current = queue.poll();
-
-				if (current.x == to.x && current.y == to.y) {
-					return cnt;
-				}
-
-				for (int i = 0; i < 8; i++) {
-					Pos next = new Pos(current.x + dx[i], current.y + dy[i]);
-					if (isInRange(next) && !visited[next.x][next.y]) {
-						visited[next.x][next.y] = true;
-						queue.add(next);
-					}
-				}
-
-			}
-
-			cnt++;
-		}
-
-		return -1;
-	}
-
-	static boolean isInRange(Pos pos) {
-		return 0 <= pos.x && pos.x < I && 0 <= pos.y && pos.y < I;
-	}
-}
-
-class Pos {
-	int x, y;
-
-	public Pos(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
+    static boolean isInRange(int x, int y) {
+        return 0 <= x && x < I && 0 <= y && y < I;
+    }
 }
