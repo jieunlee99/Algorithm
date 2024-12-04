@@ -4,53 +4,51 @@ import java.io.*;
 public class Main {
 
 	static int N, M;
-	static int A, B, C;
 
 	static long[] dist;
 	static ArrayList<Edge> edges;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringBuilder sb = new StringBuilder();
 
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken()); // 도시 수
-		M = Integer.parseInt(st.nextToken()); // 버스 수
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-		dist = new long[N + 1];
+		dist = new long[N+1];
 		edges = new ArrayList<>();
 
 		for (int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine());
-			A = Integer.parseInt(st.nextToken());
-			B = Integer.parseInt(st.nextToken());
-			C = Integer.parseInt(st.nextToken());
-			edges.add(new Edge(A, B, C));
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			int c = Integer.parseInt(st.nextToken());
+
+			edges.add(new Edge(a, b, c));
 		}
 
-		bellmanFord();
+		boolean hasNegativeCycle = bellmanFord();
 
-		if (hasNegativeCycle()) {
-			bw.write("-1\n");
+		if (hasNegativeCycle) {
+			sb.append(-1).append("\n");
 		} else {
 			for (int i = 2; i <= N; i++) {
 				if (dist[i] == Long.MAX_VALUE) {
-					bw.write("-1\n");
+					sb.append(-1).append("\n");
 				} else {
-					bw.write(dist[i] + "\n");
+					sb.append(dist[i]).append("\n");
 				}
 			}
 		}
 
-		bw.flush();
-
-		bw.close();
-		br.close();
+		System.out.print(sb.toString());
 	}
 
-	static void bellmanFord() {
+	static boolean bellmanFord() {
 		Arrays.fill(dist, Long.MAX_VALUE);
-		dist[1] = 0; // start = 1
+
+		dist[1] = 0;
 
 		for (int i = 0; i < N - 1; i++) {
 			for (Edge edge : edges) {
@@ -63,10 +61,6 @@ public class Main {
 				}
 			}
 		}
-	}
-
-	static boolean hasNegativeCycle() {
-		dist[1] = 0; // start = 1
 
 		for (Edge edge : edges) {
 			if (dist[edge.from] != Long.MAX_VALUE && dist[edge.to] > dist[edge.from] + edge.cost) {
@@ -85,4 +79,5 @@ class Edge {
 		this.to = to;
 		this.cost = cost;
 	}
+
 }
