@@ -5,66 +5,53 @@ public class Main {
 
 	static final int INF = 1000000000;
 	static int N, M;
-	static int[][] graph;
+	static int[][] cost;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
 		N = Integer.parseInt(br.readLine());
 		M = Integer.parseInt(br.readLine());
 
-		graph = new int[N + 1][N + 1];
+		cost = new int[N + 1][N + 1];
 		for (int i = 1; i <= N; i++) {
-			for (int j = 1; j <= N; j++) {
-				if (i == j) {
-					graph[i][j] = 0;
-				} else {
-					graph[i][j] = INF;
-				}
-			}
+			Arrays.fill(cost[i], INF);
+			cost[i][i] = 0;
 		}
 
-		StringTokenizer st;
-		int a, b, c;
 		for (int i = 0; i < M; i++) {
-			st = new StringTokenizer(br.readLine());
-			a = Integer.parseInt(st.nextToken());
-			b = Integer.parseInt(st.nextToken());
-			c = Integer.parseInt(st.nextToken());
-			graph[a][b] = Math.min(graph[a][b], c);
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			int c = Integer.parseInt(st.nextToken());
+			cost[a][b] = Math.min(cost[a][b], c);
 		}
 
 		floyd();
-
-		for (int i = 1; i <= N; i++) {
-			for (int j = 1; j <= N; j++) {
-				
-				if(graph[i][j] == INF) {
-					graph[i][j] = 0;
+		
+		StringBuilder sb = new StringBuilder();
+		for(int i=1; i<=N; i++) {
+			for(int j=1; j<=N; j++) {
+				if(cost[i][j] == INF) {
+					cost[i][j] = 0;
 				}
-				
-				bw.write(graph[i][j] + " ");
+				sb.append(cost[i][j]).append(" ");
 			}
-			bw.write("\n");
+			sb.append("\n");
 		}
 
-		bw.flush();
-
-		bw.close();
-		br.close();
+		System.out.print(sb);
 	}
 
 	static void floyd() {
 		for (int k = 1; k <= N; k++) {
 			for (int i = 1; i <= N; i++) {
 				for (int j = 1; j <= N; j++) {
-					if (graph[i][k] != Long.MAX_VALUE && graph[k][j] != Long.MAX_VALUE) {
-						graph[i][j] = Math.min(graph[i][j], graph[i][k] + graph[k][j]);
+					if (cost[i][k] != Integer.MAX_VALUE && cost[k][j] != Integer.MAX_VALUE) {
+						cost[i][j] = Math.min(cost[i][j], cost[i][k] + cost[k][j]);
 					}
 				}
 			}
 		}
 	}
-
 }
