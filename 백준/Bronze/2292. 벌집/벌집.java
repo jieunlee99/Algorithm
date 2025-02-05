@@ -8,15 +8,18 @@ public class Main {
 
 		int N = Integer.parseInt(br.readLine());
 
-		int i = 1;
-		while (N > 0) {
-			if (N == 1)
+		int temp = 1;
+		int cnt = 1;
+
+		while (true) {
+			if (temp >= N) {
 				break;
-			N -= i * 6;
-			i++;
+			}
+			temp += 6 * cnt;
+			cnt++;
 		}
 
-		System.out.println(i);
+		System.out.println(cnt);
 	}
-}
 
+}
