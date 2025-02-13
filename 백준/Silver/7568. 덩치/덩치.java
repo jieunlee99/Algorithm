@@ -11,7 +11,7 @@ public class Main {
 		
 		N = Integer.parseInt(br.readLine());
 		
-		people = new Person[N+1];
+		people = new Person[N];
 		
 		for(int i=0; i<N; i++) {
 			StringTokenizer st = new StringTokenizer(br.readLine());
