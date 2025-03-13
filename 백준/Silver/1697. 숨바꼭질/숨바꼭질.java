@@ -3,51 +3,48 @@ import java.util.*;
 
 public class Main {
 
-    static final int MAX = 100_000;
-    static int N, K;
-    static boolean[] visited = new boolean[MAX + 1];
+	static int N, K;
+	static final int MAX = 100_000;
+	static boolean[] visited = new boolean[MAX + 1];
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken()); // 시작 위치
-        K = Integer.parseInt(st.nextToken()); // 목표 위치
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken()); // 시작
+		K = Integer.parseInt(st.nextToken()); // 도착
 
-        System.out.println(bfs());
-    }
+		System.out.println(bfs());
+	}
 
-    static int bfs() {
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(N);
-        visited[N] = true;
+	static int bfs() {
+		Queue<Integer> queue = new LinkedList<>();
+		queue.add(N);
+		visited[N] = true;
 
-        int time = 0;
+		int time = 0;
 
-        while (!queue.isEmpty()) {
-            int size = queue.size();
-            for (int i = 0; i < size; i++) {
-                int pos = queue.poll();
+		while (!queue.isEmpty()) {
+			int size = queue.size();
 
-                if (pos == K) {
-                    return time;
-                }
+			for (int i = 0; i < size; i++) {
+				int pos = queue.poll();
 
-                int[] nextArr = { pos + 1, pos - 1, pos * 2 };
-                for (int next : nextArr) {
-                    if (isInRange(next) && !visited[next]) {
-                        visited[next] = true;
-                        queue.add(next);
-                    }
-                }
-            }
-            time++;
-        }
+				if (pos == K) {
+					return time;
+				}
 
-        return -1; 
-    }
+				int[] nextArr = { pos - 1, pos + 1, pos * 2 };
+				for (int next : nextArr) {
+					if (0 <= next && next <= MAX && !visited[next]) {
+						visited[next] = true;
+						queue.add(next);
+					}
+				}
+			}
+			time++;
+		}
 
-    static boolean isInRange(int num) {
-        return 0 <= num && num <= MAX;
-    }
+		return -1;
+	}
 }
