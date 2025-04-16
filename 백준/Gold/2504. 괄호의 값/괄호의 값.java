@@ -1,56 +1,57 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.Stack;
+
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        // System.setIn(new FileInputStream("src/P2504/input.txt"));
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		String input = br.readLine();
 
-        Stack<Character> stack = new Stack<>();
+		Stack<Character> stack = new Stack<>();
+		
+		int result = 0; // 괄호로 만들어진 숫자 더하기 (x)
+		int tmp = 1; // 괄호 완성될때 곱하기
+		
+		boolean isValid = true;
 
-        int result = 0;
-        int value = 1;
+		for (int i = 0; i < input.length(); i++) {
+			char c = input.charAt(i);
 
-        String input = br.readLine();
+			if (c == '(') {
+				stack.push('(');
+				tmp *= 2;
+			} else if (c == '[') {
+				stack.push('[');
+				tmp *= 3;
+			} else if (c == ')') {
+				// 괄호 짝이 안맞으면 invalid
+				if (stack.isEmpty() || stack.peek() != '(') {
+					isValid = false;
+					break;
+				}
+				if (input.charAt(i - 1) == '(') {
+					result += tmp;
+				}
+				stack.pop();
+				tmp /= 2;
+			} else if (c == ']') {
+				if (stack.isEmpty() || stack.peek() != '[') {
+					isValid = false;
+					break;
+				}
+				if (input.charAt(i - 1) == '[') {
+					result += tmp;
+				}
+				stack.pop();
+				tmp /= 3;
+			}
+		}
 
-        for(int i=0; i<input.length(); i++) {
-            char ch = input.charAt(i);
-
-            if(ch == '(') {
-                stack.push(ch);
-                value *= 2;
-            } else if(ch == '[') {
-                stack.push(ch);
-                value *= 3;
-            } else if(ch == ')') {
-                if(stack.isEmpty() || stack.peek() != '(') {
-                    result = 0;
-                    break;
-                } else if(input.charAt(i-1) == '(') {
-                    result += value;
-                }
-
-                stack.pop();
-                value/=2;
-            } else if(ch == ']') {
-                if(stack.isEmpty() || stack.peek() != '[') {
-                    result = 0;
-                    break;
-                } else if(input.charAt(i-1) == '[') {
-                    result += value;
-                }
-
-                stack.pop();
-                value/=3;
-            }
-        }
-
-        if(!stack.isEmpty()) {
-            System.out.println(0);
-        } else {
-            System.out.println(result);
-        }
-    }
+		if (!isValid || !stack.isEmpty()) {
+			System.out.println(0);
+		} else {
+			System.out.println(result);
+		}
+	}
 }
