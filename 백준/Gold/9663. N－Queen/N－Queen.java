@@ -1,48 +1,59 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
-    static int n;
-    static int[] arr; // 인덱스는 행, 값은 열을 의미
-    static int count = 0; // 결과 값
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static int N;
+	static int cnt;
+	static int[] board; // board[row] = col → 각 행(row)에 퀸이 놓인 열(col)
 
-        n = Integer.parseInt(br.readLine());
-        arr = new int[n];
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        backtracking(0);
+		N = Integer.parseInt(br.readLine());
 
-        System.out.println(count);
-    }
+		board = new int[N];
 
-    public static void backtracking(int depth) {
-        if (depth == n) {
-            count++;
-            return;
-        }
+		backtracking(0);
 
-        for (int i = 0; i < n; i++) {
-            arr[depth] = i;
-            if (possible(depth)) { // 해당 위치에 퀸을 놓을 수 있다면 다음 depth 탐색
-                backtracking(depth + 1);
-            }
-        }
-    }
+		System.out.println(cnt);
+	}
 
-    // 퀸을 놓을 수 있는 위치인지 확인해준다.
-    public static boolean possible(int col) {
-        for (int i = 0; i < col; i++) {
-            // 같은 행에 퀸이 있는지
-            if (arr[i] == arr[col]) {
-                return false;
-            }
-            // 대각선에 퀸이 있는지 확인한다.
-            else if (Math.abs(col - i) == Math.abs(arr[col] - arr[i])) {
-                return false;
-            }
-        }
-        // 둘다 없다면 true
-        return true;
-    }
+	static void backtracking(int depth) {
+
+		// 목적지인가
+		if (depth == N) {
+			cnt++;
+			return;
+		}
+
+		// 순회
+		for (int i = 0; i < N; i++) {
+			board[depth] = i;
+
+			// 갈 수 있는가
+			if (isPossible(depth)) {
+				// 간다
+				backtracking(depth + 1);
+			}
+		}
+	}
+
+	static boolean isPossible(int col) {
+		for (int i = 0; i < col; i++) {
+
+			// 같은 열에 있는지
+			if (board[i] == board[col]) {
+				return false;
+			}
+
+			// 대각선에 있는지
+			else if (Math.abs(col - i) == Math.abs(board[col] - board[i])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 }
