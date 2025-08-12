@@ -1,72 +1,71 @@
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    static int L, C;
-    static char[] input;
-    static char[] result;
+	static int L, C;
 
-    public static void main(String[] args) throws Exception {
+	static char[] alpha;
+	static char[] result;
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        L = Integer.parseInt(st.nextToken());
-        C = Integer.parseInt(st.nextToken());
+	static StringBuilder sb = new StringBuilder();
 
-        input = new char[C]; // 주어진 문자들
-        result = new char[L]; // 암호 저장
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        st = new StringTokenizer(br.readLine());
-        for(int i=0; i<C; i++) {
-            input[i] = st.nextToken().charAt(0);
-        }
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		L = Integer.parseInt(st.nextToken());
+		C = Integer.parseInt(st.nextToken());
 
-        Arrays.sort(input);
+		alpha = new char[C];
+		result = new char[L];
 
-        dfs(0, 0);
-    }
+		st = new StringTokenizer(br.readLine());
+		for (int i = 0; i < C; i++) {
+			alpha[i] = st.nextToken().charAt(0);
+		}
 
-    public static void dfs(int start, int depth) {
+		Arrays.sort(alpha);
 
-        // 목적지인가?
-        if(depth == L) {
-            if(isValid()) {
-                System.out.println(new String(result));
-            }
-            return;
-        }
+		backtracking(0, 0);
 
-        // 순회
-        for(int i=start; i<C; i++) {
-            // 선택 후 go
-            result[depth] = input[i];
-            dfs(i+1, depth+1);
-        }
-    }
+		System.out.print(sb);
+	}
 
-    public static boolean isValid() {
-        int vowels = 0; // 모음 개수
-        int consonants = 0; // 자음 개수
+	static void backtracking(int start, int depth) {
 
-        for(char c:result) {
-            if(isVowel(c)) {
-                vowels++;
-            } else {
-                consonants++;
-            }
-        }
+		if (depth == L) {
+			if (isValidWord()) {
+				sb.append(new String(result)).append("\n");
+			}
+			return;
+		}
 
-        // 각 암호는 최소 한 개의 모음(a, e, i, o, u)과 최소 두 개의 자음으로 구성되어야 한다.
-        return vowels>=1 &&  consonants>=2;
-    }
+		for (int i = start; i < C; i++) {
+			result[depth] = alpha[i];
+			backtracking(i + 1, depth + 1);
+		}
+	}
 
-    // 모음인가?
-    public static boolean isVowel(char c) {
-        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
-    }
+	// 최소 모음 1개, 자음 2개 이상 있어야 함
+	static boolean isValidWord() {
+
+		int cntVowel = 0;
+		int cntConsonant = 0;
+
+		for (char c : result) {
+			if (isVowel(c)) {
+				cntVowel++;
+			} else {
+				cntConsonant++;
+			}
+		}
+
+		return cntVowel >= 1 && cntConsonant >= 2;
+
+	}
+
+	static boolean isVowel(char c) {
+		return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+	}
 }
