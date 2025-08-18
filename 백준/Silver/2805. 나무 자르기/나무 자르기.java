@@ -1,83 +1,50 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-	static int N, M;
-	static int[] array;
-
-	// parametric search vs. binary search
-
-	// 높이를 가장 높은 나무에서 점점 내리는걸로..
-
-	// start & mid & end가 모두 같아지면 stop
-
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
+		int N = Integer.parseInt(st.nextToken()); // 나무의 수
+		int M = Integer.parseInt(st.nextToken()); // 집으로 가져가려고 하는 나무의 길이
 
-		array = new int[N];
+		int[] trees = new int[N];
 
-		int max = Integer.MIN_VALUE;
+		int low = 0, high = 0;
 
+		// ex) 20, 15, 10, 17
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++) {
-			array[i] = Integer.parseInt(st.nextToken());
-			max = Math.max(max, array[i]);
+			trees[i] = Integer.parseInt(st.nextToken());
+			high = Math.max(high, trees[i]);
 		}
 
-		int start = 0;
-		int end = max;
-		int mid = 0;
+		// 적어도 M미터의 나무를 집에 가져가기 위해 절단기에 설정할 수 있는 높이의 최대값 탐색 - 이진 탐색
+		while (low < high) {
+			int mid = (low + high) / 2;
 
-		int result = -1;
+			long sum = sumCutTree(trees, mid);
 
-		while (true) {
-
-			mid = (start + end) / 2;
-
-			long sum = sumCutTree(mid);
-			
-			// mid를 날릴지 말지는 선택
-			// 날릴거면 result에 저장해줘야 함.
-
-			// sum > M : 높이 올려야 함 -> start = mid + 1, result = mid
-			// sum == M : result = mid, break;
-			// sum < M : 높이 내려야 함 -> end = mid-1
-
-			if (sum > M) {
-				result = mid;
-				start = mid + 1;
-			} else if (sum < M) {
-				end = mid - 1;
-			} else { // sum == M
-				result = mid;
-				break;
-			}
-
-			if (start > end) {
-				break;
+			if (sum < M) {
+				high = mid;
+			} else {
+				low = mid + 1;
 			}
 		}
 
-		System.out.println(result);
+		// upperbound 방식의 이진 탐색이기 때문에 반환된 값에 -1을 해줘야 한다.
+		System.out.println(low - 1);
 	}
 
-	static long sumCutTree(int value) {
-		long sum = 0;
-		for (int a : array) {
-			if (a > value) {
-				sum += a - value;
+	static long sumCutTree(int[] trees, int value) {
+		long sum = 0L;
+		for (int tree : trees) {
+			if (tree > value) {
+				sum += (tree - value);
 			}
 		}
 		return sum;
 	}
-
 }
