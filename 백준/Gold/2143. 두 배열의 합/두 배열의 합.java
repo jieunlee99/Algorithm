@@ -1,110 +1,84 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
 	static int T, N, M;
-
-	static int[] A;
-	static int[] B;
+	static int[] A, B;
 
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		T = Integer.parseInt(st.nextToken());
+		T = Integer.parseInt(br.readLine());
 
-		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-
+		N = Integer.parseInt(br.readLine());
 		A = new int[N];
-
-		st = new StringTokenizer(br.readLine());
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++) {
 			A[i] = Integer.parseInt(st.nextToken());
 		}
 
-		st = new StringTokenizer(br.readLine());
-		M = Integer.parseInt(st.nextToken());
-
+		M = Integer.parseInt(br.readLine());
 		B = new int[M];
-
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < M; i++) {
 			B[i] = Integer.parseInt(st.nextToken());
 		}
 
-		// 부배열의 합 만들기
-		ArrayList<Long> listA = new ArrayList<>();
-		ArrayList<Long> listB = new ArrayList<>();
+		// 각 배열에서 가능한 부배열의 합을 저장
+		List<Integer> subA = getSubArraySums(A, N);
+		List<Integer> subB = getSubArraySums(B, M);
 
-		for (int i = 0; i < N; i++) {
-			long temp = 0;
-			for (int j = i; j < N; j++) {
-				temp += A[j];
-				listA.add(temp);
-			}
-		}
-		Collections.sort(listA);
+		Collections.sort(subB); // 이분 탐색을 위해 정렬
 
-		for (int i = 0; i < M; i++) {
-			long temp = 0;
-			for (int j = i; j < M; j++) {
-				temp += B[j];
-				listB.add(temp);
-			}
-		}
-		Collections.sort(listB, Comparator.reverseOrder());
+		long count = 0;
 
-
-		// PA, PB 만들어서 sum과 T 비교
-		int pa = 0, pb = 0;
-		long cnt = 0;
-
-		while (true) {
-			long currentA = listA.get(pa);
-			long currentB = listB.get(pb);
-			long sum = currentA + currentB;
-
-			if (sum < T) {
-				pa++;
-			} else if (sum > T) {
-				pb++;
-			} else { // sum == T
-				
-				long cntA = 0;
-				while(pa < listA.size() && listA.get(pa) == currentA) {
-					cntA++;
-					pa++;
-				}
-				
-				long cntB = 0;
-				while(pb < listB.size() && listB.get(pb) == currentB) {
-					cntB++;
-					pb++;
-				}
-				
-				cnt+= cntA*cntB;
-				
-
-
-			}
-            
-            				if(pa == listA.size() || pb == listB.size()) {
-					break;
-				}
+		// 가능한 bSum(=T-aSum)의 개수를 count
+		for (int aSum : subA) {
+			count += (upperbound(subB, T - aSum) - lowerbound(subB, T - aSum));
 		}
 
-		System.out.println(cnt);
+		System.out.println(count);
+	}
+
+	// target 이상의 값 처음 나오는 위치
+	private static int lowerbound(List<Integer> list, int target) {
+		int low = 0, high = list.size();
+		while (low < high) {
+			int mid = (low + high) / 2;
+			if (list.get(mid) >= target) {
+				high = mid;
+			} else {
+				low = mid + 1;
+			}
+		}
+		return low;
+	}
+
+	// target을 초과하는 값이 처음 나오는 위치
+	private static int upperbound(List<Integer> list, int target) {
+		int low = 0, high = list.size();
+		while (low < high) {
+			int mid = (low + high) / 2;
+			if (list.get(mid) > target) {
+				high = mid;
+			} else {
+				low = mid + 1;
+			}
+		}
+		return low;
+	}
+
+	private static List<Integer> getSubArraySums(int[] arr, int size) {
+		List<Integer> subSums = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			int sum = 0;
+			for (int j = i; j < size; j++) {
+				sum += arr[j];
+				subSums.add(sum);
+			}
+		}
+		return subSums;
 	}
 
 }
