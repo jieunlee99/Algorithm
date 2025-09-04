@@ -1,3 +1,5 @@
+// bottom up
+
 import java.io.*;
 import java.util.*;
 
@@ -30,13 +32,11 @@ public class Main {
 
 			// update (b번째 수를 c로 변경)
 			if (a == 1) {
-				long diff = c - arr[b - 1]; // 기존 값과의 차이
-				arr[b - 1] = c; // 배열 값 갱신
-				update(1, S, 1, b, diff);
+				update(b, c);
 			}
 			// query (b번째 수부터 c번째 수까지 합 구하기)
 			else if (a == 2) {
-				long sum = query(1, S, 1, b, (int) c);
+				long sum = query(b, (int) c);
 				sb.append(sum).append("\n");
 			}
 		}
@@ -61,27 +61,38 @@ public class Main {
 	}
 
 	// 세그먼트 트리 update
-	static void update(int left, int right, int node, int target, long diff) {
-		if (target < left || target > right)
-			return;
+	static void update(int target, long value) {
+		int node = S + target - 1;
+		tree[node] = value;
 
-		tree[node] += diff;
-		if (left != right) {
-			int mid = (left + right) / 2;
-			update(left, mid, node * 2, target, diff);
-			update(mid + 1, right, node * 2 + 1, target, diff);
+		node /= 2;
+
+		while (node > 0) {
+			tree[node] = tree[node * 2] + tree[node * 2 + 1];
+			node /= 2;
 		}
 	}
 
 	// 세그먼트 트리 query
-	static long query(int left, int right, int node, int queryLeft, int queryRight) {
-		if (queryRight < left || right < queryLeft)
-			return 0; // 범위 밖
-		if (queryLeft <= left && right <= queryRight)
-			return tree[node]; // 포함됨
+	static long query(int queryLeft, int queryRight) {
+		int left = S + queryLeft - 1;
+		int right = S + queryRight - 1;
 
-		int mid = (left + right) / 2;
-		return query(left, mid, node * 2, queryLeft, queryRight)
-				+ query(mid + 1, right, node * 2 + 1, queryLeft, queryRight);
+		long sum = 0;
+
+		while (left <= right) {
+			if (left % 2 == 1) {
+				sum += tree[left++];
+			}
+
+			if (right % 2 == 0) {
+				sum += tree[right--];
+			}
+
+			left /= 2;
+			right /= 2;
+		}
+
+		return sum;
 	}
 }
