@@ -1,37 +1,35 @@
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        HashMap<String, Integer> map = new HashMap<>();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        String tree;
-        int treeCnt = 0;
+		// 이름, 횟수
+		Map<String, Integer> map = new HashMap<>();
 
-        while (true) {
-            tree = br.readLine();
-            if (tree == null || tree.isEmpty()) {
-                break;
-            }
-            map.put(tree, map.getOrDefault(tree, 0) + 1);
-            treeCnt++;
-        }
+		int treeCnt = 0;
 
-        List<String> keySet = new ArrayList<>(map.keySet());
-        Collections.sort(keySet);
+		String treeName;
+		while (true) {
+			treeName = br.readLine();
+			if (treeName == null || treeName.isEmpty()) {
+				break;
+			}
+			map.put(treeName, map.getOrDefault(treeName, 0) + 1);
+			treeCnt++;
+		}
 
-        StringBuilder sb = new StringBuilder();
-        for(String key:keySet) {
-            float percent = (map.get(key) * 100.0f) / treeCnt;
-            sb.append(key).append(" ")
-                    .append(String.format("%.4f", percent)).append("\n");
-        }
+		List<String> treeList = new ArrayList<>(map.keySet());
+		Collections.sort(treeList);
 
-        System.out.print(sb);
-    }
+		StringBuilder sb = new StringBuilder();
+		for (String tree : treeList) {
+			float percent = (map.get(tree) * 100.0f) / treeCnt;
+			sb.append(tree).append(" ").append(String.format("%.4f", percent)).append("\n");
+		}
+
+		System.out.print(sb);
+	}
 }
