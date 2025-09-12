@@ -1,36 +1,43 @@
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.PriorityQueue;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
 
-        int N = Integer.parseInt(br.readLine());
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
 
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((o1, o2) -> o2 - o1); // 내림차순 정렬
-        PriorityQueue<Integer> minHeap = new PriorityQueue<>((o1, o2) -> o1 - o2); // 오름차순 정렬
+		int N = Integer.parseInt(br.readLine());
 
-        for (int i = 0; i < N; i++) {
-            int num = Integer.parseInt(br.readLine());
+		PriorityQueue<Integer> maxHeap = new PriorityQueue<>((o1, o2) -> o2 - o1); // 내림차순
+		PriorityQueue<Integer> minHeap = new PriorityQueue<>((o1, o2) -> o1 - o2); // 오름차순
 
-            // 각 힙의 개수를 비교하여 추가하기 때문에, 그 후 값을 비교하여 크기에 문제가 있을 시 교환시켜줌
-            
-            if (maxHeap.size() == minHeap.size()) maxHeap.add(num);
-            else minHeap.add(num);
+		while (N-- > 0) {
+			int num = Integer.parseInt(br.readLine());
 
-            if (!maxHeap.isEmpty() && !minHeap.isEmpty()) {
-                if (maxHeap.peek() > minHeap.peek()) {
-                    int tmp = maxHeap.poll();
-                    maxHeap.offer(minHeap.poll());
-                    minHeap.offer(tmp);
-                }
-            }
+			if (maxHeap.size() == minHeap.size()) {
+				maxHeap.add(num);
+			} else {
+				minHeap.add(num);
+			}
 
-            sb.append(maxHeap.peek()).append("\n");
-        }
+			if (!maxHeap.isEmpty() && !minHeap.isEmpty()) {
+				if (maxHeap.peek() > minHeap.peek()) {
+					int tmp = maxHeap.poll();
+					maxHeap.offer(minHeap.poll());
+					minHeap.offer(tmp);
+				}
+			}
 
-        System.out.print(sb);
-    }
+			sb.append(maxHeap.peek()).append("\n");
+		}
+
+		System.out.println(sb.toString());
+	}
+
 }
