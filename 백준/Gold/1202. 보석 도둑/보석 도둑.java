@@ -1,5 +1,5 @@
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -8,86 +8,71 @@ import java.util.StringTokenizer;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
-        // 최대 힙 (jewel의 value로 정렬)
-        PriorityQueue<Jewel> pq = new PriorityQueue<>(Comparator.comparing(Jewel::getValue).reversed());
+	static int N, K;
+	static Jewel[] jewels;
+	static long[] bags;
 
-        Jewel[] jewels;
-        long[] bags;
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        // System.setIn(new FileInputStream("src/P1202/input.txt"));
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		K = Integer.parseInt(st.nextToken());
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int K = Integer.parseInt(st.nextToken());
+		jewels = new Jewel[N];
+		for (int i = 0; i < N; i++) {
+			st = new StringTokenizer(br.readLine());
+			jewels[i] = new Jewel(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+		}
 
-        jewels = new Jewel[N];
-        bags = new long[K];
+		// 보석 무게 오름차순 정렬
+		Arrays.sort(jewels, Comparator.comparing(Jewel::getWeight));
 
-        for(int i=0; i<N; i++) {
-            st = new StringTokenizer(br.readLine());
-            int weight = Integer.parseInt(st.nextToken());
-            int value = Integer.parseInt(st.nextToken());
-            jewels[i] = new Jewel(weight, value);
-        }
-        // 보석 무게 오름차순 정렬
-        Arrays.sort(jewels, Comparator.comparing(Jewel::getWeight));
+		bags = new long[K];
+		for (int i = 0; i < K; i++) {
+			bags[i] = Long.parseLong(br.readLine());
+		}
 
-        for(int i=0; i<K; i++) {
-            bags[i] = Long.parseLong(br.readLine());
-        }
-        // 가방 무게 오름차순 정렬
-        Arrays.sort(bags);
+		// 가방 무게 오름차순 정렬
+		Arrays.sort(bags);
 
+		PriorityQueue<Jewel> pq = new PriorityQueue<>(Comparator.comparing(Jewel::getValue).reversed());
+		long maxSum = 0;
 
-        // 가방 순회
-        // 가방에 넣을 수 있는 보석을 우선순위 큐에 넣는다.
+		// 가방 순회
 
-        long maxSum = 0;
+		int t = 0;
+		for (int i = 0; i < K; i++) {
+			while (t < N) {
+				if (bags[i] >= jewels[t].weight) { // 가방에 공간이 있다
+					pq.offer(jewels[t++]);
+				} else {
+					break;
+				}
+			}
 
-        int j=0;
+			if (!pq.isEmpty()) {
+				maxSum += pq.poll().value;
+			}
+		}
 
-        for(int i=0; i<K; i++) {
-            while(j<N) {
-                if(bags[i]>= jewels[j].weight) {
-                    pq.add(jewels[j++]);
-                } else {
-                    break;
-                }
-            }
+		System.out.println(maxSum);
+	}
 
-            if(!pq.isEmpty()) {
-                maxSum += pq.poll().value;
-            }
-        }
+	static class Jewel {
+		int weight, value;
 
+		public Jewel(int weight, int value) {
+			this.weight = weight;
+			this.value = value;
+		}
 
-        System.out.println(maxSum);
-    }
-}
+		public int getWeight() {
+			return weight;
+		}
 
-class Jewel {
-    int weight, value;
-
-    public Jewel(int weight, int value) {
-        this.weight = weight;
-        this.value = value;
-    }
-
-    public int getWeight() {
-        return weight;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "Jewel{" +
-                "weight=" + weight +
-                ", value=" + value +
-                '}';
-    }
+		public int getValue() {
+			return value;
+		}
+	}
 }
