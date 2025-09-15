@@ -1,175 +1,134 @@
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
+	static int N, M, S = 1;
+	static int[] segTree; // 세그먼트 트리 (강수량 최대값 저장)
+	static YearInfo[] infos; // 입력받은 연도별 데이터 (1-based)
+	static Map<Integer, YearInfo> yearMap = new HashMap<>();
+	static StringBuilder sb = new StringBuilder();
 
-    static int N, M;
-    static int S = 1;
-    static Info[] infos;
-    static Info[] tree;
-    static HashMap<Integer, IdxRain> map = new HashMap<>();
-    static StringBuilder sb = new StringBuilder();
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+		// N 입력
+		N = Integer.parseInt(br.readLine());
+		while (S < N)
+			S <<= 1;
 
-        // 강수량 정보의 개수 입력 (N)
-        N = Integer.parseInt(br.readLine());
+		infos = new YearInfo[N + 1];
+		segTree = new int[2 * S];
 
-        // 세그먼트 트리 크기를 N보다 큰 2의 제곱수로 조정
-        while (S < N) {
-            S *= 2;
-        }
+		// 강수량 정보 입력
+		for (int i = 1; i <= N; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			int year = Integer.parseInt(st.nextToken());
+			int rain = Integer.parseInt(st.nextToken());
 
-        // infos: 입력받은 강수량 정보를 저장할 배열 (1-based index)
-        infos = new Info[N + 1];
-        // tree: 세그먼트 트리 배열 (2 * S 크기로 초기화)
-        tree = new Info[2 * S];
+			infos[i] = new YearInfo(year, rain, i);
+			segTree[i + S - 1] = rain;
+			yearMap.put(year, infos[i]);
+		}
 
-        // 초기화할 리프 노드 범위
-        for (int i = S; i < 2 * S; i++) {
-            tree[i] = new Info(0, 0);
-        }
+		// 세그먼트 트리 초기화
+		build();
 
-        // 강수량 정보 입력 및 세그먼트 트리 리프 노드에 저장
-        for (int i = 1; i <= N; i++) {
-            st = new StringTokenizer(br.readLine());
-            int year = Integer.parseInt(st.nextToken());
-            int rain = Integer.parseInt(st.nextToken());
+		// 쿼리 입력
+		M = Integer.parseInt(br.readLine());
+		for (int i = 0; i < M; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			int beforeY = Integer.parseInt(st.nextToken());
+			int nowX = Integer.parseInt(st.nextToken());
+			sb.append(processQuery(beforeY, nowX)).append("\n");
+		}
 
-            // info 객체 생성 후 infos 배열과 세그먼트 트리 리프 노드에 저장
-            Info info = new Info(year, rain);
-            infos[i] = info;
-            tree[S + i - 1] = info;
+		System.out.print(sb);
+	}
 
-            // map에 연도별 인덱스 및 강수량 저장
-            map.put(year, new IdxRain(i, rain));
-        }
+	// 세그먼트 트리 초기화
+	static void build() {
+		for (int i = S - 1; i > 0; i--) {
+			segTree[i] = Math.max(segTree[i * 2], segTree[i * 2 + 1]);
+		}
+	}
 
-        // 세그먼트 트리 초기화 (리프 노드 외의 노드들을 계산)
-        init();
+	// 구간 최대값 쿼리
+	static int query(int l, int r) {
+		if (l > r)
+			return 0;
+		int res = 0;
+		l += S - 1;
+		r += S - 1;
+		while (l <= r) {
+			if ((l & 1) == 1)
+				res = Math.max(res, segTree[l++]);
+			if ((r & 1) == 0)
+				res = Math.max(res, segTree[r--]);
+			l >>= 1;
+			r >>= 1;
+		}
+		return res;
+	}
 
-        // 쿼리의 개수 입력 (M)
-        M = Integer.parseInt(br.readLine());
-        for (int i = 0; i < M; i++) {
-            st = new StringTokenizer(br.readLine());
-            int beforeY = Integer.parseInt(st.nextToken());
-            int nowX = Integer.parseInt(st.nextToken());
+	// 쿼리 처리
+	static String processQuery(int beforeY, int nowX) {
+		YearInfo before = yearMap.get(beforeY);
+		YearInfo now = yearMap.get(nowX);
 
-            IdxRain beforeYInfo = map.get(beforeY); // beforeY와 nowX가 있을 때 중복 호출 제거
-            IdxRain nowXInfo = map.get(nowX);
+		// (1) 두 연도 모두 기록 없음
+		if (before == null && now == null)
+			return "maybe";
 
-            // 두 연도 모두 기록이 없는 경우: maybe 출력
-            if (beforeYInfo == null && nowXInfo == null) {
-                sb.append("maybe").append("\n");
-            } else if (beforeYInfo != null && nowXInfo == null) {
-                // 이전 연도는 기록이 있지만 현재 연도는 기록이 없는 경우
-                int queryLeft = beforeYInfo.index + 1;
-                int queryRight = binarySearch(nowX) - 1;
-                int maxRain = query(1, 1, S, queryLeft, queryRight);
+		// (2) 이전 연도만 기록됨
+		if (before != null && now == null) {
+			int left = before.index + 1;
+			int right = findInsertPosition(nowX) - 1;
+			int maxRain = query(left, right);
+			return (maxRain < before.rain) ? "maybe" : "false";
+		}
 
-                if (maxRain < beforeYInfo.rain) {
-                    sb.append("maybe").append("\n");
-                } else {
-                    sb.append("false").append("\n");
-                }
-            } else if (beforeYInfo == null && nowXInfo != null) {
-                // 이전 연도는 기록이 없고 현재 연도는 기록이 있는 경우
-                int queryLeft = binarySearch(beforeY);
-                int queryRight = nowXInfo.index - 1;
-                int maxRain = query(1, 1, S, queryLeft, queryRight);
+		// (3) 현재 연도만 기록됨
+		if (before == null && now != null) {
+			int left = findInsertPosition(beforeY);
+			int right = now.index - 1;
+			int maxRain = query(left, right);
+			return (maxRain >= now.rain) ? "false" : "maybe";
+		}
 
-                if (maxRain >= nowXInfo.rain) {
-                    sb.append("false").append("\n");
-                } else {
-                    sb.append("maybe").append("\n");
-                }
-            } else {
-                // 두 연도 모두 기록이 있는 경우
-                int queryLeft = beforeYInfo.index + 1;
-                int queryRight = nowXInfo.index - 1;
-                int maxRain = query(1, 1, S, queryLeft, queryRight);
+		// (4) 두 연도 모두 기록 있음
+		if (before.index >= now.index)
+			return "false";
 
-                if (beforeYInfo.rain < nowXInfo.rain || maxRain >= nowXInfo.rain) {
-                    sb.append("false").append("\n");
-                } else if (queryRight - queryLeft == nowX - beforeY - 2) {
-                    sb.append("true").append("\n");
-                } else {
-                    sb.append("maybe").append("\n");
-                }
-            }
-        }
+		int maxRain = query(before.index + 1, now.index - 1);
+		if (before.rain < now.rain || maxRain >= now.rain)
+			return "false";
 
-        // 결과 출력
-        System.out.print(sb);
+		int recordedYears = now.index - before.index - 1;
+		int actualGap = now.year - before.year - 1;
+		return (recordedYears == actualGap) ? "true" : "maybe";
+	}
 
-    }
-
-    // 세그먼트 트리 초기화 함수
-    static void init() {
-        // 리프 노드가 아닌 내부 노드들을 계산
-        for (int i = S - 1; i >= 1; i--) {
-            tree[i] = new Info(0, Math.max(tree[i * 2].rain, tree[i * 2 + 1].rain));
-        }
-    }
-
-    // 이진 탐색을 통해 주어진 연도의 위치를 찾는 함수
-    static int binarySearch(int year) {
-        int left = 1;
-        int right = N;
-
-        // 연도를 기준으로 이진 탐색
-        while (left < right) {
-            int mid = (left + right) / 2;
-            if (infos[mid].year < year) {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
-        }
-
-        // 탐색 결과 반환
-        return right;
-    }
-
-    // 세그먼트 트리를 사용하여 주어진 범위 내 최대 강수량을 구하는 함수
-    static int query(int node, int start, int end, int queryLeft, int queryRight) {
-        // 범위가 겹치지 않으면 0 반환
-        if (start > queryRight || end < queryLeft) {
-            return 0;
-        }
-
-        // 범위 내에 있으면 해당 노드의 값 반환
-        if (queryLeft <= start && end <= queryRight) {
-            return tree[node].rain;
-        }
-
-        // 구간을 반으로 나누어 좌우 자식 노드에서 최대값을 구함
-        int mid = (start + end) / 2;
-        return Math.max(query(node * 2, start, mid, queryLeft, queryRight), query(node * 2 + 1, mid + 1, end, queryLeft, queryRight));
-    }
+	// year가 들어가야 할 위치 찾기 (lower bound)
+	static int findInsertPosition(int year) {
+		int l = 1, r = N;
+		while (l < r) {
+			int mid = (l + r) / 2;
+			if (infos[mid].year < year)
+				l = mid + 1;
+			else
+				r = mid;
+		}
+		return r;
+	}
 }
 
-class Info {
-    int year;
-    int rain;
+// 연도 정보 클래스
+class YearInfo {
+	int year, rain, index;
 
-    public Info(int year, int rain) {
-        this.year = year;
-        this.rain = rain;
-    }
-}
-
-class IdxRain {
-    int index;
-    int rain;
-
-    public IdxRain(int index, int rain) {
-        this.index = index;
-        this.rain = rain;
-    }
+	public YearInfo(int year, int rain, int index) {
+		this.year = year;
+		this.rain = rain;
+		this.index = index;
+	}
 }
