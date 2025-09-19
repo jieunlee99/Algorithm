@@ -1,50 +1,49 @@
-
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class Main {
-    static final int MAX = 1_000_000;
-    static boolean[] isPrime = new boolean[MAX + 1];
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
+	static final int MAX = 1_000_000;
+	static boolean[] isPrime = new boolean[MAX + 1];
+	static StringBuilder sb = new StringBuilder();
 
-        // 에라토스테네스의 체로 소수 배열 초기화
-        sieve();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        while (true) {
-            int n = Integer.parseInt(br.readLine());
-            if (n == 0) {
-                break;
-            }
+		checkPrime();
 
-            String result = solution(n);
-            sb.append(result).append("\n");
-        }
+		while (true) {
 
-        System.out.print(sb);
-    }
+			int N = Integer.parseInt(br.readLine());
+			if (N == 0) {
+				break;
+			}
 
-    static void sieve() {
-        for (int i = 2; i <= MAX; i++) {
-            isPrime[i] = true;
-        }
-        for (int i = 2; i * i <= MAX; i++) {
-            if (isPrime[i]) {
-                for (int j = i * i; j <= MAX; j += i) {
-                    isPrime[j] = false;
-                }
-            }
-        }
-    }
+			solution(N);
+		}
 
-    static String solution(int n) {
-        for (int a = 2; a <= n / 2; a++) {
-            if (isPrime[a] && isPrime[n - a]) {
-                return n + " = " + a + " + " + (n - a);
-            }
-        }
-        return "Goldbach's conjecture is wrong.";
-    }
+		System.out.print(sb);
+	}
+
+	// max까지 소수를 체크하여 배열에 저장
+	static void checkPrime() {
+		Arrays.fill(isPrime, true);
+		for (int i = 2; i * i <= MAX; i++) {
+			for (int j = i * i; j <= MAX; j += i) {
+				isPrime[j] = false;
+			}
+		}
+	}
+
+	static void solution(int n) {
+		for (int i = 2; i <= n / 2; i++) {
+			if (isPrime[i] && isPrime[n - i]) {
+				sb.append(n).append(" = ").append(i).append(" + ").append(n - i).append("\n");
+				return;
+			}
+		}
+		sb.append("Goldbach's conjecture is wrong.\n");
+	}
 }
