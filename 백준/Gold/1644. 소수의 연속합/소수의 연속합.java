@@ -1,59 +1,52 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    static final int MAX = 4_000_000;
-    static boolean[] isPrime = new boolean[MAX + 1];
-    static ArrayList<Integer> primes = new ArrayList<>();
-    static int N;
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
+	static int N;
+	static boolean[] isPrime;
+	static List<Integer> primes = new ArrayList<>();
 
-        initIsPrime();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		N = Integer.parseInt(br.readLine());
 
-        // 투 포인터
-        int pa = 0, pb = 0;
-        int sum = primes.isEmpty() ? 0 : primes.get(0);
-        int cnt = 0;
+		init(N);
 
-        while (pb < primes.size()) {
-            if (sum < N) {
-                pb++;
-                if (pb < primes.size()) {
-                    sum += primes.get(pb);
-                }
-            } else if (sum > N) {
-                sum -= primes.get(pa++);
-            } else { // sum == N
-                cnt++;
-                sum -= primes.get(pa++);
-            }
-        }
+		int cnt = 0, sum = 0;
+		int left = 0, right = 0;
 
-        System.out.println(cnt);
-    }
+		while (true) {
+			if (sum >= N) {
+				if (sum == N)
+					cnt++;
+				sum -= primes.get(left++);
+			} else {
+				if (right == primes.size())
+					break;
+				sum += primes.get(right++);
+			}
+		}
 
-    static void initIsPrime() {
-        for (int i = 2; i <= MAX; i++) {
-            isPrime[i] = true;
-        }
+		System.out.println(cnt);
+	}
 
-        for (int i = 2; i <= MAX; i++) {
-            if (isPrime[i]) {
-                // j = i * i 가 MAX를 넘지 않는 경우에만 반복
-                for (long j = (long) i * i; j <= MAX; j += i) {
-                    isPrime[(int) j] = false;
-                }
-            }
-        }
+	static void init(int limit) {
+		isPrime = new boolean[limit + 1];
+		Arrays.fill(isPrime, true);
+		isPrime[0] = isPrime[1] = false;
 
-        for (int i = 2; i <= MAX; i++) {
-            if (isPrime[i]) {
-                primes.add(i);
-            }
-        }
-    }
+		for (int i = 2; i * i <= limit; i++) {
+			if (isPrime[i]) {
+				for (int j = i * i; j <= limit; j += i) {
+					isPrime[j] = false;
+				}
+			}
+		}
+
+		for (int i = 2; i <= limit; i++) {
+			if (isPrime[i])
+				primes.add(i);
+		}
+	}
 }
