@@ -1,50 +1,45 @@
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String input = br.readLine();
-        br.close();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        // 1. 오름차순
-        input = makeInputReverse(input);
+		String input = br.readLine();
 
-        // 2. 0을 포함하는지 확인 (0을 포함하면 무조건 마지막 수가 0)
-        boolean hasZero = input.contains("0");
+		input = sort(input);
+		boolean hasZero = input.contains("0");
+		boolean isMultipleOf3 = isMultipleOf3(input);
+		if (hasZero && isMultipleOf3) {
+			System.out.println(input);
+		} else {
+			System.out.println(-1);
+		}
+	}
 
-        // 3. 각 자리 수의 합이 3의 배수인지 확인
-        boolean isMultipleOf3 = isMultipleOf3(input);
+	static String sort(String input) {
+		char[] nums = input.toCharArray();
+		Arrays.sort(nums);
+		return new StringBuilder(new String(nums)).reverse().toString();
+	}
 
-        if(hasZero && isMultipleOf3) {
-            System.out.println(input);
-        } else {
-            System.out.println(-1);
-        }
-    }
+	static boolean isMultipleOf3(String input) {
+		char[] nums = input.toCharArray();
 
-    static String makeInputReverse(String input) {
-        char[] nums = input.toCharArray();
-        Arrays.sort(nums);
-        return new StringBuilder(new String(nums)).reverse().toString();
-    }
+		int sum = 0;
 
-    static boolean isMultipleOf3(String input) {
-        char[] nums = input.toCharArray();
+		for (char num : nums) {
+			sum += (num - '0');
+		}
 
-        int sum = 0;
+		if (sum % 3 == 0) {
+			return true;
+		}
+		return false;
+	}
 
-        for (char num : nums) {
-            sum += Character.getNumericValue(num);
-        }
-
-        if (sum % 3 == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }
