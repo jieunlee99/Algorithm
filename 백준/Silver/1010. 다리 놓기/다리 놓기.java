@@ -1,46 +1,38 @@
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
 
-    static int[][] dp = new int[31][31];
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+		int T = Integer.parseInt(br.readLine());
 
-        int T = Integer.parseInt(br.readLine());
+		int[][] dp = new int[31][31];
+		dp[1][0] = 1;
+		dp[1][1] = 1;
 
-        StringBuilder sb = new StringBuilder();
+		for (int i = 2; i <= 30; i++) {
+			dp[i][0] = 1;
+			for (int j = 1; j < i; j++) {
+				dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+			}
+			dp[i][i] = 1;
+		}
 
-        for(int i=0; i<T; i++) {
-            st = new StringTokenizer(br.readLine());
-            int n = Integer.parseInt(st.nextToken());
-            int m = Integer.parseInt(st.nextToken());
-            sb.append(combination(n, m)).append("\n");
-        }
+		StringBuilder sb = new StringBuilder();
+		while (T-- > 0) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			int N = Integer.parseInt(st.nextToken());
+			int M = Integer.parseInt(st.nextToken());
 
-        System.out.print(sb);
-    }
+			sb.append(dp[M][N]).append("\n");
+		}
 
-    static int combination(int n, int k) {
+		System.out.println(sb);
+	}
 
-        if(n < k) {
-            int temp = n;
-            n = k;
-            k = temp;
-        }
-
-        if(dp[n][k] != 0) {
-            return dp[n][k];
-        }
-
-        if(k == 0 || n == k) {
-            return dp[n][k] = 1;
-        }
-
-        return  dp[n][k] = combination(n-1, k-1) + combination(n-1, k);
-    }
 }
