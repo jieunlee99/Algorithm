@@ -1,69 +1,83 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 
 public class Main {
 
-    public long gcd(long a, long b) {
-        return (b == 0) ? a : gcd(b, a % b);
-    }
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
 
-    public String[] convertToFractions(String[] decimalNumbers) {
-        String[] fractions = new String[decimalNumbers.length];
-        for (int i = 0; i < decimalNumbers.length; i++) {
-            fractions[i] = decimalNumbers[i].contains("(")
-                    ? convertRepeatingDecimal(decimalNumbers[i])
-                    : convertNonRepeatingDecimal(decimalNumbers[i]);
-        }
-        return fractions;
-    }
+		int T = Integer.parseInt(br.readLine());
 
-    private String convertNonRepeatingDecimal(String decimal) {
-        int denominator = (int) Math.pow(10, decimal.length() - 2);
-        int numerator = Integer.parseInt(decimal.substring(2));
-        long gcdValue = gcd(denominator, numerator);
-        return (numerator / gcdValue) + "/" + (denominator / gcdValue);
-    }
+		while (T-- > 0) {
+			sb.append(convertToFraction(br.readLine())).append("\n");
+		}
 
-    private String convertRepeatingDecimal(String decimal) {
-        int startIndex = decimal.indexOf("(");
-        int length = decimal.length() - 2;
-        long denominator = (long) Math.pow(10, length - 2) - (long) Math.pow(10, startIndex - 2);
+		System.out.println(sb);
+	}
+    
+    // 순환소수와 유한소수를 구분하여 변환
+	static String convertToFraction(String decimal) {
+		if (decimal.contains("(")) {
+			return convertRepeatingDecimal(decimal);
+		}
+		return convertNonRepeatingDecimal(decimal);
+	}
 
-        String repeatingPart = decimal.substring(2, decimal.length() - 1).replace("(", "").replace(")", "");
-        long numerator = Long.parseLong(repeatingPart);
+	// 순환소수 변환
+	static String convertRepeatingDecimal(String decimal) {
+		int openParenIndex = decimal.indexOf("(");
 
-        if (startIndex > 2) {
-            numerator -= Long.parseLong(decimal.substring(2, startIndex));
-        }
+		// ex) 0.1(6) -> 16
+		String fullNumStr = decimal.substring(2, openParenIndex)
+				+ decimal.substring(openParenIndex + 1, decimal.length() - 1);
+		long fullNum = Long.parseLong(fullNumStr);
 
-        long gcdValue = gcd(denominator, numerator);
-        return (numerator / gcdValue) + "/" + (denominator / gcdValue);
-    }
+		// 순환되지 않는 부분
+		String nonRepeatingStr = decimal.substring(2, openParenIndex);
+		long nonRepeatingNum = nonRepeatingStr.isEmpty() ? 0 : Long.parseLong(nonRepeatingStr);
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		// 분자
+		long numerator = fullNum - nonRepeatingNum;
 
-        int testCount = Integer.parseInt(br.readLine());
-        String[] decimalNumbers = new String[testCount];
+		// 분모
+		int repeatingLength = fullNumStr.length() - nonRepeatingStr.length();
+		StringBuilder denominatorBuilder = new StringBuilder();
+		// - 순환되는 길이만큼 9를 붙임
+		for (int i = 0; i < repeatingLength; i++) {
+			denominatorBuilder.append('9');
+		}
+		// - 순환하지 않는 부분의 길이만큼 0을 붙임
+		for (int i = 0; i < nonRepeatingStr.length(); i++) {
+			denominatorBuilder.append('0');
+		}
+		long denominator = Long.parseLong(denominatorBuilder.toString());
 
-        for (int i = 0; i < testCount; i++) {
-            decimalNumbers[i] = br.readLine();
-        }
+		return reduce(numerator, denominator);
+	}
 
-        br.close();
+	// 유한소수 변환
+	static String convertNonRepeatingDecimal(String decimal) {
+		String numStr = decimal.substring(2); // "0."을 제거한 문자열
 
-        Main main = new Main();
-        String[] fractions = main.convertToFractions(decimalNumbers);
+		long numerator = Long.parseLong(numStr); // 분자
+		long denominator = (long) Math.pow(10, numStr.length()); // 분모
 
-        for (String fraction : fractions) {
-            bw.write(fraction + "\n");
-        }
+		return reduce(numerator, denominator);
+	}
 
-        bw.flush();
-        bw.close();
-    }
+	// 분자와 분모의 최대공약수로 약분 - 기약분수
+	static String reduce(long numerator, long denominator) {
+		long gcd = gcd(numerator, denominator);
+		return (numerator / gcd) + "/" + (denominator / gcd);
+	}
+
+    // 최대공약수 계산
+	static long gcd(long a, long b) {
+		if (a % b == 0) {
+			return b;
+		}
+		return gcd(b, a % b);
+	}
 }
