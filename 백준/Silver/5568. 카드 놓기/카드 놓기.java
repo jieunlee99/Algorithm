@@ -1,44 +1,48 @@
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Main {
 
-    static int N, K;
-    static String[] cards;
-    static boolean[] visited;
-    static Set<String> set = new HashSet<>();
+	static int N, K;
+	static String[] cards;
+	static boolean[] visited;
+	static Set<String> set = new HashSet<>();
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        K = Integer.parseInt(br.readLine());
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        cards = new String[N];
-        visited = new boolean[N];
+		N = Integer.parseInt(br.readLine());
+		K = Integer.parseInt(br.readLine());
 
-        for(int i=0; i<N; i++) {
-            cards[i] = br.readLine();
-        }
+		cards = new String[N];
+		visited = new boolean[N];
 
-        findCombinations("", 0);
+		for (int i = 0; i < N; i++) {
+			cards[i] = br.readLine();
+		}
 
-        System.out.println(set.size());
-    }
+		backtracking("", 0);
 
-    static void findCombinations(String current, int count) {
-        if(count == K) {
-            set.add(current);
-            return;
-        }
+		System.out.println(set.size());
 
-        for(int i=0; i<N; i++) {
-            if(!visited[i]) {
-                visited[i] = true;
-                findCombinations(current+cards[i], count+1);
-                visited[i] = false;
-            }
-        }
-    }
+	}
+
+	static void backtracking(String current, int depth) {
+		if (depth == K) {
+			set.add(current);
+			return;
+		}
+
+		for (int i = 0; i < N; i++) {
+			if (!visited[i]) {
+				visited[i] = true;
+				backtracking(current + cards[i], depth + 1);
+				visited[i] = false;
+			}
+		}
+	}
 }
