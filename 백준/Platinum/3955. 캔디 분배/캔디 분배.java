@@ -1,86 +1,86 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int T; // 0 < t < 100
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        StringTokenizer st;
+	static int T;
+	static long K, C;
 
-        T = Integer.parseInt(br.readLine());
+	static final long MAX = 1_000_000_000; // 최대값은 10^9
 
-        while (T-- > 0) {
-            st = new StringTokenizer(br.readLine());
-            // 1 <= k, c <= 10^9
-            // k명이 참가한다면, k*x+1개의 사탕이 필요하다. (x는 자연수)
-            // 한 봉지에는 총 c개의 사탕이 들어있다.
-            // k*x + 1 = c*y (여기서 나온 y를 출력하면 된다.)
-            long k = Long.parseLong(st.nextToken());
-            long c = Long.parseLong(st.nextToken());
-            sb.append(solve(k, c)).append("\n");
-        }
+	static StringBuilder sb = new StringBuilder();
 
-        System.out.print(sb);
-    }
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 
-    // 확장 유클리드 호제법
-    static Result extendedGcd(long a, long b) {
-        if (b == 0) {
-            return new Result(a, 1, 0);
-        }
+		T = Integer.parseInt(br.readLine()); // 테스트케이스의 수
 
-        Result result = extendedGcd(b, a % b);
-        long gcd = result.gcd;
-        long x = result.y;
-        long y = result.x - (a / b) * result.y;
-        return new Result(gcd, x, y);
-    }
+		while (T-- > 0) {
+			st = new StringTokenizer(br.readLine());
+			K = Long.parseLong(st.nextToken()); // 참가자 수
+			C = Long.parseLong(st.nextToken()); // 한 봉지에 들어있는 사탕의 수
+			sb.append(solve(K, C)).append("\n");
+		}
 
-    static String solve(long k, long c) {
-        
-        // C가 1일 때 특수한 경우
-        if (c == 1) {
-            // 해가 k보다 작으면 가능, 크면 불가능
-            return k + 1 > 1_000_000_000 ? "IMPOSSIBLE" : String.valueOf(k + 1);
-        }
+		System.out.print(sb);
+	}
 
-        // K가 1일 때 특수한 경우
-        if (k == 1) {
-            return "1";
-        }
-        
-        Result result = extendedGcd(k, c);
+	// 사탕을 몇 봉지 준비해야 하는지 문자열로 반환
+	static String solve(long k, long c) {
+		// 사탕을 1개씩 판다면 참가자 수보다 한 개만 많게 준비하면 됨
+		// - 범위를 만족하지 않는 경우만 불가능함
+		if (c == 1) {
+			return k + 1 > MAX ? "IMPOSSIBLE" : String.valueOf(k + 1);
+		}
 
-        /// 해가 존재하지 않음
-        if (result.gcd != 1) {
-            return "IMPOSSIBLE";
-        }
+		// 참가자가 한명이라면 한 봉지만 있으면 됨
+		if (k == 1) {
+			return "1";
+		}
+		
+		Result result = extendedGcd(k, c);
+		// gcd가 1이어야 문제를 풀 수 있음
+		if (result.gcd != 1) {
+			return "IMPOSSIBLE";
+		}
 
         // 초기 해
-        long x0 = result.x;
-        long y0 = result.y;
+		long x0 = result.x;
+		long y0 = result.y;
+ 
+        // y를 자연수로 만들기 위해 K를 조정함 (방정식)
+		long tMin = (long) Math.ceil((double) x0 / c);
+		long y = y0 + k * tMin;
 
-        // y가 자연수가 되기 위해 k 값 조정
-        long tMin = (long) Math.ceil((double) x0 / c);
-        long y = y0 + k * tMin;
+		if (y <= 0 || y > MAX) {
+			return "IMPOSSIBLE";
+		}
+		return String.valueOf(y);
+	}
 
-        // y가 자연수 및 제한 조건을 만족하는지 확인
-        if (y <= 0 || y > 1_000_000_000) {
-            return "IMPOSSIBLE";
-        }
-        return String.valueOf(y);
-    }
-}
+	// 확장 유클리드 호제법
+	static Result extendedGcd(long a, long b) {
+		if (b == 0) {
+			return new Result(a, 1, 0);
+		}
 
-class Result {
-    long gcd, x, y;
+		Result result = extendedGcd(b, a % b);
+		long gcd = result.gcd;
+		long x = result.y;
+		long y = result.x - (a / b) * result.y;
+		return new Result(gcd, x, y);
+	}
 
-    public Result(long gcd, long x, long y) {
-        this.gcd = gcd;
-        this.x = x;
-        this.y = y;
-    }
+	static class Result {
+		long gcd, x, y;
+
+		public Result(long gcd, long x, long y) {
+			this.gcd = gcd;
+			this.x = x;
+			this.y = y;
+		}
+	}
 }
