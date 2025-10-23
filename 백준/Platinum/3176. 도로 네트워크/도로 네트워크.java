@@ -1,13 +1,20 @@
-import java.util.*;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
 
 	static final int LOG = 17;
-
 	static int N, K;
-	static int A, B, C;
-	static int D, E;
+	static int A, B, C, D, E;
 
 	static boolean[] visited;
 	static int[] depth;
@@ -17,10 +24,9 @@ public class Main {
 	static int[][] minDist;
 	static int[][] maxDist;
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
 		StringTokenizer st;
 
 		N = Integer.parseInt(br.readLine());
@@ -41,74 +47,28 @@ public class Main {
 			A = Integer.parseInt(st.nextToken());
 			B = Integer.parseInt(st.nextToken());
 			C = Integer.parseInt(st.nextToken());
-
 			adjList[A].add(new Road(B, C));
 			adjList[B].add(new Road(A, C));
 		}
 
 		bfs(1);
-
-		findAncestors();
+		initSparseTable();
 
 		K = Integer.parseInt(br.readLine());
 
 		StringBuilder sb = new StringBuilder();
-		int[] result;
-
 		for (int i = 0; i < K; i++) {
 			st = new StringTokenizer(br.readLine());
 			D = Integer.parseInt(st.nextToken());
 			E = Integer.parseInt(st.nextToken());
-
-			result = lca(D, E);
+			int[] result = lca(D, E);
 			sb.append(result[0]).append(" ").append(result[1]).append("\n");
 		}
-
+		
 		bw.write(sb.toString());
-
 		bw.flush();
-
 		bw.close();
 		br.close();
-	}
-
-	static void bfs(int root) {
-		ArrayDeque<Integer> queue = new ArrayDeque<>();
-
-		queue.add(root);
-		depth[root] = 0;
-		visited[root] = true;
-
-		while (!queue.isEmpty()) {
-			int current = queue.poll();
-			int next;
-
-			for (Road road : adjList[current]) {
-				next = road.to;
-
-				if (!visited[next]) {
-					visited[next] = true;
-					parent[0][next] = current;
-					depth[next] = depth[current] + 1;
-
-					minDist[0][next] = road.dist;
-					maxDist[0][next] = road.dist;
-
-					queue.add(next);
-				}
-			}
-		}
-	}
-
-	static void findAncestors() {
-		for (int k = 1; k <= LOG; k++) {
-			for (int v = 1; v <= N; v++) {
-				parent[k][v] = parent[k - 1][parent[k - 1][v]];
-
-				minDist[k][v] = Math.min(minDist[k - 1][v], minDist[k - 1][parent[k - 1][v]]);
-				maxDist[k][v] = Math.max(maxDist[k - 1][v], maxDist[k - 1][parent[k - 1][v]]);
-			}
-		}
 	}
 
 	static int[] lca(int a, int b) {
@@ -122,7 +82,7 @@ public class Main {
 		}
 
 		for (int k = LOG; k >= 0; k--) {
-			if (depth[b] - depth[a] >= (1 << k)) {
+			if ((depth[b] - depth[a]) >= (1 << k)) {
 				min = Math.min(min, minDist[k][b]);
 				max = Math.max(max, maxDist[k][b]);
 				b = parent[k][b];
@@ -137,7 +97,6 @@ public class Main {
 			if (parent[k][a] != parent[k][b]) {
 				min = Math.min(min, Math.min(minDist[k][a], minDist[k][b]));
 				max = Math.max(max, Math.max(maxDist[k][a], maxDist[k][b]));
-
 				a = parent[k][a];
 				b = parent[k][b];
 			}
@@ -147,13 +106,51 @@ public class Main {
 		max = Math.max(max, Math.max(maxDist[0][a], maxDist[0][b]));
 		return new int[] { min, max };
 	}
-}
 
-class Road {
-	int to, dist;
+	static void initSparseTable() {
+		for (int k = 1; k <= LOG; k++) {
+			for (int v = 1; v <= N; v++) {
+				parent[k][v] = parent[k - 1][parent[k - 1][v]];
+				minDist[k][v] = Math.min(minDist[k - 1][v], minDist[k - 1][parent[k - 1][v]]);
+				maxDist[k][v] = Math.max(maxDist[k - 1][v], maxDist[k - 1][parent[k - 1][v]]);
+			}
+		}
+	}
 
-	public Road(int to, int dist) {
-		this.to = to;
-		this.dist = dist;
+	static void bfs(int root) {
+		Queue<Integer> queue = new LinkedList<>();
+
+		visited[root] = true;
+		depth[root] = 0;
+		queue.offer(root);
+
+		while (!queue.isEmpty()) {
+			int current = queue.poll();
+
+			for (Road road : adjList[current]) {
+				int next = road.to;
+				int dist = road.dist;
+
+				if (!visited[next]) {
+					visited[next] = true;
+					depth[next] = depth[current] + 1;
+					parent[0][next] = current;
+
+					minDist[0][next] = dist;
+					maxDist[0][next] = dist;
+
+					queue.offer(next);
+				}
+			}
+		}
+	}
+
+	static class Road {
+		int to, dist;
+
+		public Road(int to, int dist) {
+			this.to = to;
+			this.dist = dist;
+		}
 	}
 }
