@@ -1,22 +1,22 @@
 import java.util.*;
 
 class Solution {
-
+    
+    ArrayList<Integer>[] adjList;
     boolean[] visited;
-    List<Integer>[] adjList;
-    int networkCnt = 0;
+    int network;
     
     public int solution(int n, int[][] computers) {
+        visited = new boolean[n];
         
-        this.visited = new boolean[n];
-        this.adjList = new ArrayList[n];
+        adjList = new ArrayList[n];
         for(int i=0; i<n; i++) {
             adjList[i] = new ArrayList<>();
         }
         
         for(int i=0; i<n; i++) {
             for(int j=0; j<n; j++) {
-                if(i!=j && computers[i][j] == 1) {
+                if(i != j && computers[i][j] == 1) {
                     adjList[i].add(j);
                 }
             }
@@ -24,31 +24,20 @@ class Solution {
         
         for(int i=0; i<n; i++) {
             if(!visited[i]) {
-                bfs(i);
-                networkCnt++;
+                dfs(i);
+                network++;
             }
         }
-  
-        return networkCnt;
+        
+        return network;
     }
     
-    void bfs(int start) {
-        Queue<Integer> queue = new LinkedList<>();
-        
-        queue.offer(start);
-        visited[start] =true;
-        
-        while(!queue.isEmpty()) {
-            int current = queue.poll();
-            
-            for(int next:adjList[current]) {
-                if(!visited[next]) {
-                    visited[next] = true;
-                    queue.offer(next);
-                }
+    public void dfs(int current) {
+        visited[current] = true;
+        for(int next:adjList[current]) {
+            if(!visited[next]) {
+                dfs(next);
             }
         }
     }
-    
-    
 }
