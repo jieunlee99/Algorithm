@@ -1,92 +1,92 @@
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
 
-	static int V, E; // 정점, 간선의 개수
-	static int K; // 시작 정점
+    static final int INF = Integer.MAX_VALUE;
+    static int V, E, K;
+    static List<Edge>[] adjList;
+    static boolean[] visited;
+    static int[] weight;
 
-	static List<Edge>[] adjList;
-	static boolean[] visited;
-	static int[] dist;
+    static class Edge implements Comparable<Edge> {
+        int to, weight;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        public Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
 
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		V = Integer.parseInt(st.nextToken());
-		E = Integer.parseInt(st.nextToken());
+        @Override
+        public int compareTo(Edge e) {
+            return this.weight - e.weight;
+        }
+    }
 
-		adjList = new ArrayList[V + 1];
-		for (int i = 1; i <= V; i++) {
-			adjList[i] = new ArrayList<>();
-		}
-		visited = new boolean[V + 1];
-		dist = new int[V + 1];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		K = Integer.parseInt(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        V = Integer.parseInt(st.nextToken()); // 정점 개수
+        E = Integer.parseInt(st.nextToken()); // 간선 개수
 
-		for (int i = 0; i < E; i++) {
-			st = new StringTokenizer(br.readLine());
-			int u = Integer.parseInt(st.nextToken());
-			int v = Integer.parseInt(st.nextToken());
-			int w = Integer.parseInt(st.nextToken());
-			adjList[u].add(new Edge(v, w)); // 방향있는 간선
-		}
+        visited = new boolean[V + 1];
+        weight = new int[V + 1];
+        adjList = new ArrayList[V + 1];
+        for (int i = 1; i <= V; i++) {
+            adjList[i] = new ArrayList<>();
+        }
 
-		dijkstra();
+        K = Integer.parseInt(br.readLine()); // 시작 정점 번호
 
-		for (int i = 1; i <= V; i++) {
-			if (dist[i] == Integer.MAX_VALUE) {
-				bw.write("INF\n");
-			} else {
-				bw.write(dist[i] + "\n");
-			}
-		}
+        for (int i = 0; i < E; i++) {
+            st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            adjList[u].add(new Edge(v, w));
+        }
 
-		bw.flush();
-		bw.close();
-		br.close();
-	}
+        dijkstra();
 
-	static void dijkstra() {
-		PriorityQueue<Edge> pq = new PriorityQueue<>();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= V; i++) {
+            if (weight[i] == INF) {
+                sb.append("INF").append("\n");
+            } else {
+                sb.append(weight[i]).append("\n");
+            }
+        }
+        System.out.print(sb);
+    }
 
-		Arrays.fill(dist, Integer.MAX_VALUE);
-		dist[K] = 0;
-		pq.offer(new Edge(K, 0));
+    static void dijkstra() {
+        PriorityQueue<Edge> pq = new PriorityQueue<>();
 
-		while (!pq.isEmpty()) {
-			Edge current = pq.poll();
+        Arrays.fill(weight, INF);
 
-			if (visited[current.to]) {
-				continue;
-			}
+        // K부터 시작
+        weight[K] = 0;
+        pq.offer(new Edge(K, 0));
 
-			visited[current.to] = true;
+        while (!pq.isEmpty()) {
+            Edge current = pq.poll();
 
-			for (Edge next : adjList[current.to]) {
-				if (dist[next.to] > next.cost + current.cost) {
-					dist[next.to] = next.cost + current.cost;
-					pq.offer(new Edge(next.to, dist[next.to]));
-				}
-			}
-		}
-	}
+            if (visited[current.to]) {
+                continue;
+            }
 
-	static class Edge implements Comparable<Edge> {
-		int to, cost;
+            visited[current.to] = true;
 
-		public Edge(int to, int cost) {
-			this.to = to;
-			this.cost = cost;
-		}
-
-		@Override
-		public int compareTo(Edge o) {
-			return this.cost - o.cost;
-		}
-
-	}
+            for (Edge next : adjList[current.to]) {
+                if (weight[next.to] > next.weight + current.weight) {
+                    weight[next.to] = next.weight + current.weight;
+                    pq.offer(new Edge(next.to, weight[next.to]));
+                }
+            }
+        }
+    }
 }
