@@ -1,106 +1,105 @@
-import java.util.*;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Main {
-    static class Edge{
-        Node from;
-        Node to;
+
+    static final long INF = Long.MAX_VALUE / 2;
+    static final int[] dx = {1, -1, 0, 0};
+    static final int[] dy = {0, 0, 1, -1};
+    static int W, H, G, X, Y, E, X1, X2, Y1, Y2, T;
+    static int[][] map;
+    static long[][] dist;
+    static List<Edge> edgeList;
+
+    static class Node {
+        int x, y;
+
+        public Node(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    static class Edge {
+        Node from, to;
         int cost;
 
-        public Edge(Node from, Node to, int cost){
+        public Edge(Node from, Node to, int cost) {
             this.from = from;
             this.to = to;
             this.cost = cost;
         }
     }
 
-    static class Node{
-        int x;
-        int y;
-
-        public Node(int x, int y){
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    static int W, H, G, E;
-    static int[][] map;
-    static final int[] dx = { 0, 0, -1, 1 };
-    static final int[] dy = { 1, -1, 0, 0 };
-    static int[][] dist;
-    static ArrayList<Edge> edgeList;
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringBuilder sb = new StringBuilder();
 
-        while(true){
+        while (true) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             W = Integer.parseInt(st.nextToken());
             H = Integer.parseInt(st.nextToken());
 
-            if(W == 0 && H == 0){
+            if (W == 0 && H == 0) {
                 break;
             }
 
             map = new int[W][H];
-            dist = new int[W][H];
+            dist = new long[W][H];
             edgeList = new ArrayList<>();
 
-            map[W-1][H-1] = 2;
-    
+            map[W - 1][H - 1] = 2; // 도착지
+
             G = Integer.parseInt(br.readLine());
-            int x, y;
-            for(int g=0; g<G; g++){
+            for (int i = 0; i < G; i++) {
                 st = new StringTokenizer(br.readLine());
-                x = Integer.parseInt(st.nextToken());
-                y = Integer.parseInt(st.nextToken());
-    
-                map[x][y] = -1;
+                X = Integer.parseInt(st.nextToken());
+                Y = Integer.parseInt(st.nextToken());
+                map[X][Y] = -1; // 묘비
             }
-    
+
             E = Integer.parseInt(br.readLine());
-            int x1, y1, x2, y2, t;
-            for(int e=0; e<E; e++){
+            for (int i = 0; i < E; i++) {
                 st = new StringTokenizer(br.readLine());
-                x1 = Integer.parseInt(st.nextToken());
-                y1 = Integer.parseInt(st.nextToken());
-                x2 = Integer.parseInt(st.nextToken());
-                y2 = Integer.parseInt(st.nextToken());
-                t = Integer.parseInt(st.nextToken());
-    
-                map[x1][y1] = 1;
-                edgeList.add(new Edge(new Node(x1, y1), new Node(x2, y2), t));
+                X1 = Integer.parseInt(st.nextToken());
+                Y1 = Integer.parseInt(st.nextToken());
+                X2 = Integer.parseInt(st.nextToken());
+                Y2 = Integer.parseInt(st.nextToken());
+                T = Integer.parseInt(st.nextToken());
+                map[X1][Y1] = 1; // 귀신 구멍
+                edgeList.add(new Edge(new Node(X1, Y1), new Node(X2, Y2), T));
             }
-    
-            for(int w=0; w<W; w++){
-                for(int h=0; h<H; h++){
-                    
-                    if(map[w][h] != 0){
+
+            for (int x = 0; x < W; x++) {
+                for (int y = 0; y < H; y++) {
+
+                    if (map[x][y] != 0) {
                         continue;
                     }
-    
-                    int nx, ny;
-                    for(int i=0; i<4; i++){
-                        nx = w + dx[i];
-                        ny = h + dy[i];
-    
-                        if((nx >=0 && ny >=0 && nx < W && ny < H) && map[nx][ny] != -1){
-                            edgeList.add(new Edge(new Node(w, h), new Node(nx, ny), 1));
+
+                    for (int i = 0; i < 4; i++) {
+                        int nx = x + dx[i];
+                        int ny = y + dy[i];
+
+                        if (nx >= 0 && nx < W && ny >= 0 && ny < H && map[nx][ny] != -1) {
+                            edgeList.add(new Edge(new Node(x, y), new Node(nx, ny), 1));
                         }
                     }
                 }
             }
-    
-            if(bellmanFordMoore(W*H)){
-                sb.append("Never\n");
-            }else{
-                if (dist[W-1][H-1] == Integer.MAX_VALUE) {
-                    sb.append("Impossible\n");
+
+            if (bellmanFord(W * H)) {
+                sb.append("Never").append("\n"); // 음수 사이클 존재하면 Never
+            } else {
+                if (dist[W - 1][H - 1] == INF) {
+                    sb.append("Impossible").append("\n"); // 출구에 갈 수 없음
                 } else {
-                    sb.append(dist[W-1][H-1]).append("\n");
+                    sb.append(dist[W - 1][H - 1]).append("\n"); // 출구에 갈 수 있음
                 }
             }
         }
@@ -109,47 +108,36 @@ public class Main {
         bw.flush();
         bw.close();
         br.close();
-
     }
 
-    static boolean bellmanFordMoore(int V){
-        for(int i=0; i<W; i++){
-            Arrays.fill(dist[i], Integer.MAX_VALUE);
+    static boolean bellmanFord(int V) {
+        for (int i = 0; i < W; i++) {
+            Arrays.fill(dist[i], INF);
         }
         dist[0][0] = 0;
 
-        for(int i=0; i<V-1; i++){
-            for(Edge edge : edgeList){
-                Node start = edge.from;
-                Node end = edge.to;
+        // V-1번 반복 (정점 개수만큼)
+        for (int i = 0; i < V - 1; i++) {
+            boolean updated = false;
+            for (Edge edge : edgeList) {
+                if (dist[edge.from.x][edge.from.y] == INF) continue;
 
-                if(dist[start.x][start.y] == Integer.MAX_VALUE){
-                    continue;
-                }
-
-                if(dist[end.x][end.y] > dist[start.x][start.y] + edge.cost){
-                    dist[end.x][end.y] = dist[start.x][start.y] + edge.cost;
+                if (dist[edge.to.x][edge.to.y] > dist[edge.from.x][edge.from.y] + edge.cost) {
+                    dist[edge.to.x][edge.to.y] = dist[edge.from.x][edge.from.y] + edge.cost;
+                    updated = true;
                 }
             }
+            if (!updated) break; // 더 이상 갱신되지 않으면 조기 종료 가능
         }
 
+        // 음수 사이클 체크 (반드시 INF 체크 포함!)
+        for (Edge edge : edgeList) {
+            if (dist[edge.from.x][edge.from.y] == INF) continue;
 
-        boolean isNegativeCycle = false;
-
-        for(Edge edge : edgeList){
-            Node start = edge.from;
-            Node end = edge.to;
-
-            if(dist[start.x][start.y] == Integer.MAX_VALUE){
-                continue;
-            }
-
-            if(dist[end.x][end.y] > dist[start.x][start.y] + edge.cost){
-                isNegativeCycle = true;
-                break;
+            if (dist[edge.to.x][edge.to.y] > dist[edge.from.x][edge.from.y] + edge.cost) {
+                return true;
             }
         }
-
-        return isNegativeCycle;
+        return false;
     }
 }
