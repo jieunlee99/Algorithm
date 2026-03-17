@@ -1,37 +1,39 @@
-import java.io.*;
-import java.util.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 public class Main {
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
-		int N = Integer.parseInt(br.readLine());
-		int[] heights = new int[N + 1];
+        int N = Integer.parseInt(br.readLine());
 
-		Stack<int[]> stack = new Stack<>();
+        Stack<int[]> stack = new Stack<>();
 
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		for (int i = 1; i <= N; i++) {
-			heights[i] = Integer.parseInt(st.nextToken());
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            int height = Integer.parseInt(st.nextToken());
 
-			// 왼쪽에서 오는 더 높은 탑을 찾음
-			while (!stack.isEmpty() && stack.peek()[1] < heights[i]) {
-				stack.pop();
-			}
+            // 왼쪽에서 오는 더 높은 탑 찾기
+            while(!stack.isEmpty() && stack.peek()[1] < height) {
+                stack.pop();
+            }
 
-			// 더 높은 탑이 없다면 0 출력
-			if (stack.isEmpty()) {
-				sb.append("0 ");
-			} else {
-				sb.append(stack.peek()[0]).append(" ");
-			}
+            if(stack.isEmpty()) {
+                sb.append(0).append(" ");
+            } else {
+                sb.append(stack.peek()[0]).append(" ");
+            }
 
-			// 현재 탑을 스택에 추가
-			stack.push(new int[] { i, heights[i] });
-		}
+            stack.push(new int[]{i+1, height});
+        }
 
-		System.out.println(sb.toString());
-	}
+        System.out.println(sb);
+
+    }
 }
