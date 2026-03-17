@@ -1,77 +1,87 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Main {
+
     static int N;
-    static List<Node>[] adjList;
-    static boolean[] visited;
-    static long totalCost = 0; 
-
-    static class Node implements Comparable<Node> {
-        int v, cost;
-
-        public Node(int v, int cost) {
-            this.v = v;
-            this.cost = cost;
-        }
-
-        @Override
-        public int compareTo(Node o) {
-            return this.cost - o.cost;
-        }
-    }
+    static int[] parent;
+    static List<Edge> edges;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         N = Integer.parseInt(br.readLine());
 
-        adjList = new ArrayList[N];
+        parent = new int[N];
         for (int i = 0; i < N; i++) {
-            adjList[i] = new ArrayList<>();
+            parent[i] = i;
         }
+        edges = new ArrayList<>();
 
-        visited = new boolean[N];
 
         for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
                 int cost = Integer.parseInt(st.nextToken());
-                
-                if (i == j) continue;
-                
-                adjList[i].add(new Node(j, cost));
+                edges.add(new Edge(i, j, cost));
             }
         }
 
-        prim(0);
+        Collections.sort(edges);
+
+        int depth = 1;
+        long totalCost = 0;
+
+        for (Edge edge : edges) {
+            if (union(edge.u, edge.v)) {
+                totalCost += edge.cost;
+                depth++;
+
+                if (depth == N) {
+                    break;
+                }
+            }
+        }
 
         System.out.println(totalCost);
     }
 
-    static void prim(int start) {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(start, 0));
+    static int find(int x) {
+        if (parent[x] == x) {
+            return x;
+        }
+        return parent[x] = find(parent[x]);
+    }
 
-        int depth = 0; 
-        
-        while (!pq.isEmpty()) {
-            Node current = pq.poll();
+    static boolean union(int x, int y) {
+        int xRoot = find(x);
+        int yRoot = find(y);
 
-            if (visited[current.v]) continue;
+        if (xRoot != yRoot) {
+            parent[yRoot] = xRoot;
+            return true;
+        }
 
-            visited[current.v] = true;
-            totalCost += current.cost;
-            depth++;
-            
-            if(depth == N) break;
+        return false;
+    }
 
-            for (Node next : adjList[current.v]) {
-                if (!visited[next.v]) {
-                    pq.offer(next);
-                }
-            }
+    static class Edge implements Comparable<Edge> {
+        int u, v, cost;
+
+        public Edge(int u, int v, int cost) {
+            this.u = u;
+            this.v = v;
+            this.cost = cost;
+        }
+
+        @Override
+        public int compareTo(Edge o) {
+            return this.cost - o.cost;
         }
     }
 }
