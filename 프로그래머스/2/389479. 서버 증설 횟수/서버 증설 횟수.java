@@ -21,7 +21,7 @@ class Solution {
                 queue.offer(need);       
                 current += need;  
                 answer += need;         
-            } else {
+            } else { // 부족하지 않아도 공간 채워줘야 함
                 queue.offer(0);
             }
         }
