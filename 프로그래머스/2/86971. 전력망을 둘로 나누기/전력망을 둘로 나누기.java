@@ -3,43 +3,40 @@ import java.util.*;
 class Solution {
     
     ArrayList<Integer>[] adjList;
-    int n;
     
     public int solution(int n, int[][] wires) {
-        this.n = n;
         int answer = Integer.MAX_VALUE;
         
-        adjList = new ArrayList[n+1]; // 1~n까지
+        adjList = new ArrayList[n+1];
         for(int i=1; i<=n; i++) {
             adjList[i] = new ArrayList<>();
         }
         
-        for(int i=0; i<wires.length; i++) {
-            // 양방향 
-            adjList[wires[i][0]].add(wires[i][1]);
-            adjList[wires[i][1]].add(wires[i][0]);
-        }
+        for(int[] wire:wires) {
+            adjList[wire[0]].add(wire[1]);
+            adjList[wire[1]].add(wire[0]);
+        } 
         
-        for(int i=0; i<wires.length; i++) {
-            int v1 = wires[i][0];
-            int v2 = wires[i][1];
+        for(int[] wire:wires) {
+            int u = wire[0];
+            int v = wire[1];
             
-            // 인덱스로 remove 되는 것을 방지
-            adjList[v1].remove(Integer.valueOf(v2));
-            adjList[v2].remove(Integer.valueOf(v1));
+            adjList[u].remove(Integer.valueOf(v));
+            adjList[v].remove(Integer.valueOf(u));
             
-            int v1_cnt = bfs(v1);
-            int v2_cnt = bfs(v2);
-            answer = Math.min(answer, Math.abs(v1_cnt-v2_cnt));
+            int cnt1 = bfs(n, u);
+            int cnt2 = bfs(n, v);
+            answer = Math.min(answer, Math.abs(cnt1-cnt2));
             
-            adjList[v1].add(v2);
-            adjList[v2].add(v1);
+            adjList[u].add(v);
+            adjList[v].add(u);
         }
         
         return answer;
     }
     
-    public int bfs(int start) {
+    // 한 전력망에 몇 개의 송전탑이 연결되어 있는지 개수 반환
+    public int bfs(int n, int start) {
         int cnt = 0;
         
         Queue<Integer> queue = new LinkedList<>();
@@ -53,9 +50,9 @@ class Solution {
             
             for(int next:adjList[current]) {
                 if(!visited[next]) {
-                    cnt++;
                     queue.offer(next);
                     visited[next] = true;
+                    cnt++;
                 }
             }
         }
