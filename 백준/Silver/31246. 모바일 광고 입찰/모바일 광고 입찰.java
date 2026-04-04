@@ -1,61 +1,37 @@
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
-
-    static int[] A, B;
-    static int N, K;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        K = Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
 
-        A = new int[N];
-        B = new int[N];
+        int[] A = new int[N];
+        int[] B = new int[N];
 
-        for(int i=0; i<N; i++) {
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             A[i] = Integer.parseInt(st.nextToken());
             B[i] = Integer.parseInt(st.nextToken());
         }
-
-        int left = 0, right = 1_000_000_000;
-
-        int answer = Integer.MAX_VALUE;
-
-        while(left<=right) {
-            int mid = (left+right)/2;
-
-            int cnt = count(mid);
-
-            if(cnt >= K) {
-                answer = Math.min(answer, mid);
-                right = mid-1;
-            } else {
-                left = mid+1;
-            }
+        int[] diff = new int[N];
+        for (int i = 0; i < N; i++) {
+            diff[i] = B[i] - A[i];
         }
 
-        if(answer == Integer.MAX_VALUE) {
-            System.out.println(0);
-        } else {
-            System.out.println(answer);
-        }
-    }
+        Arrays.sort(diff); // 필요한 금액 순으로 오름차순 정렬
 
-    public static int count(int x) {
-        int cnt = 0;
-        for(int i=0; i<N; i++) {
-            if(A[i] + x >= B[i]) {
-                cnt++;
-            }
-        }
-        return cnt;
+        // K개를 낙찰받으려면, 정렬된 배열의 K번째 값(인덱스 K-1)만큼만 X를 올리면 됨
+        int answer = diff[K - 1];
+
+        // 단, 필요한 금액이 음수면 이미 낙찰된 것이므로 0과 비교해서 큰 값 출력
+        System.out.println(Math.max(0, answer));
     }
 }
