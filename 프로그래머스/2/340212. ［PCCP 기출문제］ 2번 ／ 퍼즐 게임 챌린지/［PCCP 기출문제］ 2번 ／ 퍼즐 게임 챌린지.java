@@ -31,8 +31,7 @@ class Solution {
             if(diff <= level) {
                 totalTime += time_cur;
             } else {
-                long count = diff - level;
-                totalTime += (count * (time_cur + time_prev)) + time_cur;
+                totalTime += ((diff - level) * (time_cur + time_prev)) + time_cur;
             }
             
             if(totalTime > limit) {
