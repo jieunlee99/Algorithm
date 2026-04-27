@@ -1,31 +1,32 @@
-
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
 
+	static int N;
+	static int[] A, B, C, D;
+
 	public static void main(String[] args) throws IOException {
-		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
 
-		int N = Integer.parseInt(br.readLine());
+		N = Integer.parseInt(br.readLine());
 
-		int[] A = new int[N];
-		int[] B = new int[N];
-		int[] C = new int[N];
-		int[] D = new int[N];
+		A = new int[N];
+		B = new int[N];
+		C = new int[N];
+		D = new int[N];
 
 		for (int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine());
+			StringTokenizer st = new StringTokenizer(br.readLine());
 			A[i] = Integer.parseInt(st.nextToken());
 			B[i] = Integer.parseInt(st.nextToken());
 			C[i] = Integer.parseInt(st.nextToken());
 			D[i] = Integer.parseInt(st.nextToken());
 		}
 
-		// AB[pa] + CD[pb] = 0
-		
 		long[] AB = new long[N * N];
 		long[] CD = new long[N * N];
 
@@ -38,45 +39,40 @@ public class Main {
 			}
 		}
 
-		// 정렬
 		Arrays.sort(AB);
 		Arrays.sort(CD);
 
-		// 투 포인터
-		int pa = 0, pb = CD.length - 1;
+		int p1 = 0, p2 = N * N - 1;
 		long count = 0;
 
-		while (pa < AB.length && pb >= 0) {
-			
-			long sum = AB[pa] + CD[pb];
+		while (p1 < N * N && p2 >= 0) {
+			long sum = AB[p1] + CD[p2];
 
 			if (sum == 0) {
-				
 				long cntAB = 0, cntCD = 0;
-				long currentAB = AB[pa];
-				long currentCD = CD[pb];
+				long currentAB = AB[p1];
+				long currentCD = CD[p2];
 
-				while (pa < AB.length && AB[pa] == currentAB) {
+				while (p1 < AB.length && AB[p1] == currentAB) {
 					cntAB++;
-					pa++;
+					p1++;
 				}
 
-				while (pb >= 0 && CD[pb] == currentCD) {
+				while (p2 >= 0 && CD[p2] == currentCD) {
 					cntCD++;
-					pb--;
+					p2--;
 				}
 
 				count += cntAB * cntCD;
 				
 			} else if (sum < 0) {
-				pa++;
+				p1++;
 			} else {
-				pb--;
+				p2--;
 			}
 		}
 
 		System.out.println(count);
-
 	}
 
 }
