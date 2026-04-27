@@ -1,92 +1,97 @@
-
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
 
 public class Main {
 
-    static final int INF = Integer.MAX_VALUE;
-    static int V, E, K;
-    static List<Edge>[] adjList;
-    static boolean[] visited;
-    static int[] weight;
+	static int V, E, K;
+	static List<Edge>[] adjList;
+	static boolean[] visited;
+	static int[] dist;
 
-    static class Edge implements Comparable<Edge> {
-        int to, weight;
+	static class Edge implements Comparable<Edge> {
+		int v, w;
 
-        public Edge(int to, int weight) {
-            this.to = to;
-            this.weight = weight;
-        }
+		public Edge(int v, int w) {
+			this.v = v;
+			this.w = w;
+		}
 
-        @Override
-        public int compareTo(Edge e) {
-            return this.weight - e.weight;
-        }
-    }
+		@Override
+		public int compareTo(Edge o) {
+			return this.w - o.w;
+		}
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	}
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        V = Integer.parseInt(st.nextToken()); // 정점 개수
-        E = Integer.parseInt(st.nextToken()); // 간선 개수
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        visited = new boolean[V + 1];
-        weight = new int[V + 1];
-        adjList = new ArrayList[V + 1];
-        for (int i = 1; i <= V; i++) {
-            adjList[i] = new ArrayList<>();
-        }
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		V = Integer.parseInt(st.nextToken());
+		E = Integer.parseInt(st.nextToken());
 
-        K = Integer.parseInt(br.readLine()); // 시작 정점 번호
+		K = Integer.parseInt(br.readLine());
 
-        for (int i = 0; i < E; i++) {
-            st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
-            int w = Integer.parseInt(st.nextToken());
-            adjList[u].add(new Edge(v, w));
-        }
+		adjList = new ArrayList[V + 1];
+		for (int i = 1; i <= V; i++) {
+			adjList[i] = new ArrayList<>();
+		}
 
-        dijkstra();
+		visited = new boolean[V + 1];
+		dist = new int[V + 1];
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i <= V; i++) {
-            if (weight[i] == INF) {
-                sb.append("INF").append("\n");
-            } else {
-                sb.append(weight[i]).append("\n");
-            }
-        }
-        System.out.print(sb);
-    }
+		for (int i = 0; i < E; i++) {
+			st = new StringTokenizer(br.readLine());
+			int u = Integer.parseInt(st.nextToken());
+			int v = Integer.parseInt(st.nextToken());
+			int w = Integer.parseInt(st.nextToken());
+			adjList[u].add(new Edge(v, w));
+		}
 
-    static void dijkstra() {
-        PriorityQueue<Edge> pq = new PriorityQueue<>();
+		PriorityQueue<Edge> pq = new PriorityQueue<>();
 
-        Arrays.fill(weight, INF);
+		Arrays.fill(dist, Integer.MAX_VALUE);
+		
+		pq.offer(new Edge(K, 0));
+		dist[K] = 0;
 
-        // K부터 시작
-        weight[K] = 0;
-        pq.offer(new Edge(K, 0));
+		while (!pq.isEmpty()) {
+			Edge current = pq.poll();
 
-        while (!pq.isEmpty()) {
-            Edge current = pq.poll();
+			if (visited[current.v]) {
+				continue;
+			}
 
-            if (visited[current.to]) {
-                continue;
-            }
+			visited[current.v] = true;
 
-            visited[current.to] = true;
+			for (Edge next : adjList[current.v]) {
+				if (dist[next.v] > next.w + current.w) {
+					dist[next.v] = next.w + current.w;
+					pq.offer(new Edge(next.v, dist[next.v]));
+				}
+			}
+		}
 
-            for (Edge next : adjList[current.to]) {
-                if (weight[next.to] > next.weight + current.weight) {
-                    weight[next.to] = next.weight + current.weight;
-                    pq.offer(new Edge(next.to, weight[next.to]));
-                }
-            }
-        }
-    }
+		for (int i = 1; i <= V; i++) {
+			if (dist[i] == Integer.MAX_VALUE) {
+				bw.write("INF\n");
+			} else {
+				bw.write(dist[i] + "\n");
+			}
+		}
+
+		bw.flush();
+		bw.close();
+		br.close();
+	}
+
 }
