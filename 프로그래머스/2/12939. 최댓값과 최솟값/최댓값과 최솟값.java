@@ -2,9 +2,12 @@ import java.util.*;
 
 class Solution {
     public String solution(String s) {
-        int min = Arrays.stream(s.split(" ")).mapToInt(Integer::parseInt).min().getAsInt();
-        int max = Arrays.stream(s.split(" ")).mapToInt(Integer::parseInt).max().getAsInt();
-        
-        return min + " " + max;
+        StringTokenizer st = new StringTokenizer(s);
+        List<Integer> list = new ArrayList<>();
+        while(st.hasMoreTokens()) {
+            list.add(Integer.parseInt(st.nextToken()));
+        }
+        Collections.sort(list);
+        return list.get(0) + " "+list.get(list.size()-1);
     }
 }
