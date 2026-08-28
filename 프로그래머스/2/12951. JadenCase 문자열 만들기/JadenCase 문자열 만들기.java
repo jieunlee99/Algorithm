@@ -1,30 +1,24 @@
-
+import java.util.*;
 
 class Solution {
     public String solution(String s) {
+        String str = s.replaceAll(" ", " !");
+        
+        StringTokenizer st = new StringTokenizer(str, "!");
         StringBuilder sb = new StringBuilder();
         
-        char first = s.charAt(0);
-        if(first >= 'a' && first <='z') {
-            first -= 32;
-        }
-        sb.append(first);
-        
-        for(int i=1; i<s.length(); i++) {
-            char before = s.charAt(i-1);
-            char current = s.charAt(i);
+        while(st.hasMoreTokens()) {
+            String word = st.nextToken();
             
-            if(before == ' ') {
-                if(current >= 'a' && current <='z') {
-                    current -= 32;
-                }
-                sb.append(current);
+            System.out.println(word);
+            
+            char first = word.charAt(0);
+            if(first >= 'a' && first <= 'z') {
+                sb.append((char) (first + ('A'-'a')));
             } else {
-                if(current >= 'A' && current <='Z') {
-                    current += 32;
-                }
-                sb.append(current);
+                sb.append(first);
             }
+            sb.append(word.substring(1).toLowerCase());
         }
         
         return sb.toString();
