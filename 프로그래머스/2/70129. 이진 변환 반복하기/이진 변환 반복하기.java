@@ -1,21 +1,20 @@
 class Solution {
+    
     public int[] solution(String s) {
-        
-        int repeat = 0;
-        int remove = 0;
+        int[] answer = {0, 0};
         
         while(!s.equals("1")) {
-            int before = s.length();
-            int after = s.replaceAll("0", "").length();
+            int c = s.length(); 
             
-            remove += (before-after);
+            s = s.replace("0", "");
             
-            s = Integer.toBinaryString(after);
+            answer[0]++;
+            answer[1] += (c - s.length());
             
-            repeat++;
+            c = s.length();
+            s = Integer.toBinaryString(c);   
         }
         
-        
-        return new int[]{repeat, remove};
+        return answer;
     }
 }
