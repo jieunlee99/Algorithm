@@ -1,49 +1,58 @@
 import java.util.*;
 
 class Solution {
-    int n;
-    
     public int solution(String s) {
         int answer = 0;
         
-        n = s.length();
-        
-        for(int i=0; i<n; i++) {
-            if(isPossible(s, i)) {
+        for(int i=0; i<s.length(); i++) {            
+            if(isRightString(s)) {
                 answer++;
             }
+            s = rotateString(s);
         }
         
         return answer;
     }
     
-    public boolean isPossible(String s, int start) {
+    private String rotateString(String s) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(s.substring(1));
+        sb.append(s.charAt(0));
+        return sb.toString();
+    }
+    
+    private boolean isRightString(String s) {
         Stack<Character> stack = new Stack<>();
         
-        for(int i=start; i<start+n; i++) {
-            char cur = s.charAt(i%n);
-            
-            if(stack.isEmpty()) {
-                if(cur != ')' || cur !=']' || cur != '}') {
-                    stack.push(cur);
-                } else {
+        for(int i=0; i<s.length(); i++) {
+            char c = s.charAt(i);
+            if(c == '(' || c == '{' || c == '[') {
+                stack.push(c);
+            } else if(c == ')') {
+                if(stack.isEmpty() || stack.peek() != '(') {
                     return false;
-                }
-            } else {
-                if((stack.peek() == '(' && cur == ')')
-                    || (stack.peek() == '[' && cur == ']')
-                    || (stack.peek() == '{' && cur == '}')
-                  ) {
-                    stack.pop();
                 } else {
-                    stack.push(cur);
+                    stack.pop();
+                }
+            } else if(c == '}') {
+                if(stack.isEmpty() || stack.peek() != '{') {
+                    return false;
+                } else {
+                    stack.pop();
+                }
+            } else if(c == ']') {
+                if(stack.isEmpty() || stack.peek() != '[') {
+                    return false;
+                } else {
+                    stack.pop();
                 }
             }
         }
         
-        if(stack.isEmpty()) {
-            return true;
+        if(!stack.isEmpty()) {
+            return false;
         }
-        return false;
+        
+        return true;
     }
 }
