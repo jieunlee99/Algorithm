@@ -1,15 +1,17 @@
+import java.util.*;
+
 class Solution {
     public int[] solution(int n, long left, long right) {
-        int size = (int)(right-left+1);
-        int[] answer = new int[size];
+        int m = (int) (right-left+1);
         
-        int index = 0;
+        int[] answer = new int[m];
         
-        for(long i=left; i<=right; i++) {
-            long r = i/n;
-            long c = i%n;
-            
-            answer[index++] = (int)(Math.max(r, c)+1);
+        int idx = 0;
+        
+        for(long l=left; l<=right; l++) {
+            int i = (int) (l / n);
+            int j = (int) (l % n);
+            answer[idx++] = Math.max(i, j)+1;;
         }
         
         return answer;
