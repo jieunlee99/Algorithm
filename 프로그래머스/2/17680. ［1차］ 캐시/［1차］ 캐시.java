@@ -4,27 +4,30 @@ class Solution {
     public int solution(int cacheSize, String[] cities) {
         int answer = 0;
         
-        Deque<String> cache = new ArrayDeque<>();
+        Queue<String> cache = new LinkedList<>();
         
-        for(int i=0; i<cities.length; i++) {
+        for(String city:cities) {
+            city = city.toLowerCase();
             
-            String city = cities[i].toLowerCase();
-            
+            // hit
             if(cache.contains(city)) {
+                answer += 1;
                 cache.remove(city);
-                answer+=1;
-            } else {
+                cache.offer(city);
+            } 
+            
+            // miss
+            else {
                 answer += 5;
-            }
-            
-            cache.addLast(city);
-            
-            if (cache.size() > cacheSize) {
-                cache.pollFirst();
+                if(cache.size() == cacheSize) {
+                    cache.poll();
+                } 
+                if(cache.size() < cacheSize) {
+                    cache.offer(city);
+                }
             }
         }
         
         return answer;
     }
-
 }
