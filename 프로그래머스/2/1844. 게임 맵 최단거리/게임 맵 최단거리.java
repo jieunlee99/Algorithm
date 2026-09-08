@@ -2,18 +2,16 @@ import java.util.*;
 
 class Solution {
     
-    final int[] dx = {1, -1, 0, 0};
-    final int[] dy = {0, 0, 1, -1};
-    
     int n, m;
-    boolean[][] visited;
-    int minDist = Integer.MAX_VALUE;
+    
+    int[] dr = {1, -1, 0, 0};
+    int[] dc = {0, 0, 1, -1};
     
     public int solution(int[][] maps) {
+        n = maps.length;
+        m = maps[0].length;
         
-        this.n = maps.length;
-        this.m = maps[0].length;
-        visited = new boolean[n][m];
+        boolean[][] visited = new boolean[n][m];
         
         Queue<int[]> queue = new LinkedList<>();
         
@@ -23,30 +21,29 @@ class Solution {
         while(!queue.isEmpty()) {
             int[] current = queue.poll();
             
-            int cx = current[0];
-            int cy = current[1];
-            int dist = current[2];
+            int r = current[0];
+            int c = current[1];
+            int depth = current[2];
             
-            if(cx == n-1 && cy == m-1) {
-                return dist;
+            if(r == n - 1 && c == m - 1) {
+                return depth;
             }
             
-            for(int i=0; i<4; i++) {
-                int nx = cx + dx[i];
-                int ny = cy + dy[i];
+            for(int i = 0; i < 4; i++) {
+                int nr = r + dr[i];
+                int nc = c + dc[i];
                 
-                if(isInRange(nx, ny) && !visited[nx][ny] && maps[nx][ny] == 1) {
-                    queue.offer(new int[]{nx, ny, dist+1});
-                    visited[nx][ny] = true;
+                if(nr < 0 || nr >= n || nc < 0 || nc >= m) {
+                    continue;
                 }
-            }            
+                
+                if(!visited[nr][nc] && maps[nr][nc] == 1) {
+                    visited[nr][nc] = true;
+                    queue.offer(new int[]{nr, nc, depth + 1});
+                }
+            }
         }
         
         return -1;
-    }
-    
-
-    public boolean isInRange(int x, int y) {
-        return 0 <= x && x < n && 0 <= y && y < m;
     }
 }
