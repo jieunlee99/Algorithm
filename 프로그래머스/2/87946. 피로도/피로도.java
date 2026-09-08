@@ -1,44 +1,27 @@
 class Solution {
-    
-    boolean[] visited;
+    int answer = 0;
     
     int n;
-    int[][] dungeons;
+    boolean[] visited;
     
-    int max = 0;
-    
-    // k -> 현재 피로도
-    // dungeons -> 각 던전별 [최소 필요 피로도, 소모 피로도]가 담긴 2차원 배열
-    // -> 유저가 탐험할 수 있는 최대 던전 수
     public int solution(int k, int[][] dungeons) {
-        this.n = dungeons.length;
-        this.dungeons = dungeons;
+        n = dungeons.length;
+        visited = new boolean[n];
         
-        for(int i=0; i<n; i++) {
-            visited = new boolean[n];
-            backtracking(i, k, 0);
-        }
+        dfs(dungeons, k, 0);
         
-        return max;
+        return answer;
     }
     
-    public void backtracking(int dunNum, int k, int depth) {
-        
-        max = Math.max(max, depth);
-        
-        if(!visited[dunNum] && k >= dungeons[dunNum][0]) {
-            
-            visited[dunNum] = true;
-            
-            for(int i=0; i<n; i++) {
-                backtracking(i, k-dungeons[dunNum][1], depth+1);
+    public void dfs(int[][] dungeons, int k, int depth) {
+        for(int i=0; i<dungeons.length; i++) {
+            if(!visited[i] && k >= dungeons[i][0]) {
+                visited[i] = true;
+                dfs(dungeons, k-dungeons[i][1], depth+1);
+                visited[i] = false;
             }
-            
-            visited[dunNum] = false;
         }
         
-        
+        answer = Math.max(depth, answer);
     }
-    
-    
 }
