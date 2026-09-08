@@ -2,30 +2,29 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] topping) {
-        int n = topping.length;
+        int answer = 0;
         
-        int[] left = new int[n];
-        int[] right = new int[n];
+        Map<Integer, Integer> mapA = new HashMap<>();
+        Map<Integer, Integer> mapB = new HashMap<>();
         
-        HashSet<Integer> leftSet = new HashSet<>();
-        for (int i = 0; i < n; i++) {
-            leftSet.add(topping[i]);
-            left[i] = leftSet.size();
+        for(int t:topping) {
+            mapB.put(t, mapB.getOrDefault(t, 0)+1);
         }
         
-        HashSet<Integer> rightSet = new HashSet<>();
-        for (int i = n-1; i >= 0; i--) {
-            rightSet.add(topping[i]);
-            right[i] = rightSet.size();
-        }
-        
-        int cnt = 0;
-        for (int i = 0; i < n-1; i++) {
-            if (left[i] == right[i+1]) {
-                cnt++;
+        for(int t:topping) {
+            mapA.put(t, mapA.getOrDefault(t, 0)+1);
+            
+            if(mapB.get(t) - 1 == 0) {
+                mapB.remove(t);
+            } else {
+                mapB.put(t, mapB.get(t)-1);
+            }
+            
+            if(mapA.size() == mapB.size()) {
+                answer++;
             }
         }
         
-        return cnt;
+        return answer;
     }
 }
