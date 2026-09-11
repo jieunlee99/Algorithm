@@ -2,26 +2,24 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String s) {
+        List<Integer> tuple = new ArrayList<>();
+        
         s = s.substring(2, s.length()-2);
-        String[] arr = s.split("\\},\\{");
+        String[] sets = s.split("},\\{");
         
-        Arrays.sort(arr, (a,b)->a.length()-b.length());
+        Arrays.sort(sets, Comparator.comparingInt(String::length));
         
-        Set<Integer> set = new LinkedHashSet<>(); // 순서 유지
-        
-        for(String str:arr) {
-            String[] nums = str.split(",");
-            for(String num:nums) {
-                set.add(Integer.parseInt(num));
+        for(String set:sets) {
+            String[] nums = set.split(",");
+            
+            for (String num : nums) {
+                int value = Integer.parseInt(num);
+                if (!tuple.contains(value)) {  // 튜플에 없는 값이면 추가 (처음 등장한 숫자만 순서대로 추가)
+                    tuple.add(value);
+                }
             }
         }
-        
-        int i=0;
-        int[] answer = new int[set.size()];
-        for(int num:set) {
-            answer[i++]=num;
-        }
-        
-        return answer;
+                
+        return tuple.stream().mapToInt(Integer::intValue).toArray();
     }
 }
