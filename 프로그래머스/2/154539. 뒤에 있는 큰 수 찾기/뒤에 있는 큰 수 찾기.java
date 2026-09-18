@@ -1,30 +1,27 @@
-import java.util.Stack;
+import java.util.*;
 
 class Solution {
     public int[] solution(int[] numbers) {
-
-         int n = numbers.length;
+        int n = numbers.length;
+        
         int[] answer = new int[n];
-
+        Arrays.fill(answer, -1);
+        
+        // stack에 인덱스를 넣어줌
         Stack<Integer> stack = new Stack<>();
 
-        for(int i=n-1; i>=0; i--) {
-            while(!stack.empty()) {
-                if(stack.peek() <= numbers[i]) {
-                    stack.pop();
-                } else {
-                    answer[i] = stack.peek();
-                    break;
-                }
+        for (int i = 0; i < n; i++) {
+
+            while (!stack.isEmpty()
+                    && numbers[stack.peek()] < numbers[i]) {
+
+                int idx = stack.pop();
+                answer[idx] = numbers[i];
             }
 
-            // 큰 수가 뒤에 없을 때
-            if(stack.empty()) {
-                answer[i] = -1;
-            }
-            stack.push(numbers[i]);
+            stack.push(i);
         }
-
+        
         return answer;
     }
 }
