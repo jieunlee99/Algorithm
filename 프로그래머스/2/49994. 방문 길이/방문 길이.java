@@ -1,38 +1,47 @@
 import java.util.*;
 
 class Solution {
-    public int solution(String dirs) {
-        Set<String> visitedPaths = new HashSet<>();
+    public int solution(String dirs) {        
+        // 현재 위치
+        int x = 0, y = 0;
         
-        int curX = 0;
-        int curY = 0;
+        Set<String> path = new HashSet<>();
         
-        for (int i = 0; i < dirs.length(); i++) {
-            char dir = dirs.charAt(i);
+        for(int i=0; i<dirs.length(); i++) {
+            char c = dirs.charAt(i);
             
-            int nextX = curX;
-            int nextY = curY;
+            int nx = x;
+            int ny = y;
             
-            if (dir == 'U') nextY++;
-            else if (dir == 'D') nextY--;
-            else if (dir == 'R') nextX++;
-            else if (dir == 'L') nextX--;
+            if(c == 'U') {
+                ny++;
+            } else if(c == 'D') {
+                ny--;
+            } else if(c == 'L') {
+                nx--;
+            } else if(c == 'R') {
+                nx++;
+            } 
             
-            if (nextX < -5 || nextX > 5 || nextY < -5 || nextY > 5) {
-                continue; 
+            if(nx < -5 || nx > 5 || ny < -5 || ny > 5) {
+                continue;
             }
             
-            String path1 = curX + "," + curY + "->" + nextX + "," + nextY;
-            String path2 = nextX + "," + nextY + "->" + curX + "," + curY;
+            path.add(edgeKey(x, y, nx, ny));
             
-            visitedPaths.add(path1);
-            visitedPaths.add(path2);
-            
-            curX = nextX;
-            curY = nextY;
+            x = nx;
+            y = ny;
         }
         
-        // 양방향으로 저장됨으로 반으로 나눠줘야 함
-        return visitedPaths.size() / 2;
+        return path.size();
+    }
+    
+    // 간선 방향 관계 없이 저장
+    private String edgeKey(int x1, int y1, int x2, int y2) {
+        if(x1 < x2 || (x1 == x2 && y1 <= y2)) {
+            return x1 + "," + y1 + "->" + x2 + ","+ y2;
+        } else {
+            return x2 + "," + y2 + "->" + x1 + ","+ y1;
+        }
     }
 }
