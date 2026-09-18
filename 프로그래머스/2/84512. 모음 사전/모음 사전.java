@@ -1,27 +1,35 @@
 import java.util.*;
 
 class Solution {
-    ArrayList<String> list = new ArrayList<>();
+    
+    int answer = 0;
+    
+    List<String> list = new ArrayList<>();
+    String[] chars = { "A", "E", "I", "O", "U" };
     
     public int solution(String word) {
-        dfs("", 0);
-        Collections.sort(list);
-        return list.indexOf(word);
+        
+        dfs("");
+        
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).equals(word)) {
+                answer = i;
+                break;
+            }
+        }
+        
+        return answer;
     }
     
-    public void dfs(String current, int depth) {
+    private void dfs(String word) {
+        list.add(word);
         
-        if(depth <= 5) {
-            if(!list.contains(current)) {
-                list.add(current);
-            }
-            if(depth == 5) return;
+        if (word.length() == 5) {
+            return;
         }
-
-        dfs(current+"A", depth+1);
-        dfs(current+"E", depth+1);
-        dfs(current+"I", depth+1);
-        dfs(current+"O", depth+1);
-        dfs(current+"U", depth+1);
+        
+        for (int i = 0; i < 5; i++) {
+            dfs(word + chars[i]);
+        }
     }
 }
