@@ -2,16 +2,13 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] nums) {
-        int n = nums.length; // n/2마리 선택해야 함
+        // N마리 폰켓몬 중에서 N/2마리 선택 -> 종류가 많도록 선택
         
         Map<Integer, Integer> map = new HashMap<>();
         for(int num:nums) {
             map.put(num, map.getOrDefault(num, 0)+1);
         }
         
-        if(map.size() >= n/2) {
-            return n/2;
-        } 
-        return map.size();
+        return Math.min(map.size(), nums.length/2);
     }
 }
