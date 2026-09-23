@@ -1,20 +1,16 @@
 import java.util.*;
 
 public class Solution {
-    public int[] solution(int []arr) {
-        Stack<Integer> stack = new Stack<>();
+    public int[] solution(int[] arr) {
+        List<Integer> list = new ArrayList<>();
+        list.add(arr[0]);
         
-        for(int num:arr) {
-            if(stack.isEmpty() || stack.peek() != num) {
-                stack.push(num);
+        for(int i=1; i<arr.length; i++) {
+            if(list.get(list.size()-1) != arr[i]) {
+                list.add(arr[i]);
             }
         }
         
-        int[] answer = new int[stack.size()];
-        for(int i=stack.size()-1; i>=0; i--) {
-            answer[i] = stack.pop();
-        }
-        
-        return answer;
+        return list.stream().mapToInt(i->i).toArray();
     }
 }
