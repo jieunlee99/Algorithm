@@ -1,19 +1,21 @@
 class Solution {
     public int solution(int[][] sizes) {
-        int weight = 0;
-        int height = 0;
+        int n = sizes.length;
         
-        for(int[] size:sizes) {
-            if(size[0] < size[1]) {
-                int temp = size[0];
-                size[0] = size[1];
-                size[1] = temp;
+        int r = Integer.MIN_VALUE;
+        int c = Integer.MIN_VALUE;
+        
+        for(int i=0; i<n; i++) {
+            if(sizes[i][0] < sizes[i][1]) {
+                int temp = sizes[i][0];
+                sizes[i][0] = sizes[i][1];
+                sizes[i][1] = temp;
             }
             
-            weight = Math.max(weight, size[0]);
-            height = Math.max(height, size[1]);
+            r = Math.max(r, sizes[i][0]);
+            c = Math.max(c, sizes[i][1]);
         }
         
-        return weight*height;
+        return r*c;
     }
 }
