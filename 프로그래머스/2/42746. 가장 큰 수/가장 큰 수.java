@@ -1,23 +1,24 @@
 import java.util.*;
 
-class Solution {
+public class Solution {
     public String solution(int[] numbers) {
-        int n = numbers.length;
-        
-        String[] arr = new String[n];
-        for(int i=0; i<n; i++) {
-            arr[i] = String.valueOf(numbers[i]);
+        String answer = "";
+        String[] numberStr = new String[numbers.length];
+
+        for(int i=0;i<numbers.length;i++) {
+            numberStr[i] = String.valueOf(numbers[i]);
         }
-        
-        Arrays.sort(arr, (n1, n2) -> (n2+n1).compareTo(n1+n2));
-        if(arr[0].equals("0")) {
-            return "0"; // 가장 큰 수가 0이라면 0000이어도 0
+
+        Arrays.sort(numberStr, (s1, s2) -> (s2+s1).compareTo(s1+s2));
+
+        for(String str: numberStr) {
+            answer += str;
         }
-        
-        StringBuilder sb = new StringBuilder();
-        for(String s:arr) {
-            sb.append(s);
+
+        if(answer.charAt(0) == '0'){
+            answer = "0";
         }
-        return sb.toString();
+
+        return answer;
     }
 }
