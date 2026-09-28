@@ -2,30 +2,27 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int[] prices) {
-        int[] time = new int[prices.length];
-    
-        Queue<Integer> queue = new LinkedList<>();
-        for(int price:prices) {
-            queue.offer(price);
-        }
+        int n = prices.length;
         
-        int index = 0;
-        while(!queue.isEmpty()) {
-            int current = queue.poll();
-            int t = 0;
-            
-            for(int p:queue) {
-                t++;
-                
-                if(p < current) {
-                    break;
-                }
+        int[] answer = new int[n];
+        
+        Stack<Integer> stack = new Stack<>();
+        
+        for(int i=0; i<n; i++) {
+            // 가격이 낮아진 때를 만남
+            while(!stack.isEmpty() && prices[i] < prices[stack.peek()]) {
+                answer[stack.peek()] = i - stack.peek();
+                stack.pop();
             }
-            
-            time[index++] = t;
+            stack.push(i);
         }
         
-    
-        return time;
+        // 가격이 낮아진 때가 없음 
+        while(!stack.isEmpty()) {
+            answer[stack.peek()] = n - stack.peek() - 1;
+            stack.pop();
+        }
+        
+        return answer;
     }
 }
