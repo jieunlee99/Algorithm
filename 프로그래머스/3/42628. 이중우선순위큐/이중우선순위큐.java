@@ -2,40 +2,31 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String[] operations) {
-        int[] answer = {0, 0};
-        
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b)-> b-a);
         PriorityQueue<Integer> minHeap = new PriorityQueue<>();
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
         
-        for(String op:operations) {
-            StringTokenizer st = new StringTokenizer(op);
-            char cmd = st.nextToken().charAt(0); // I or D
+        for(int i=0; i<operations.length; i++) {
+            StringTokenizer st = new StringTokenizer(operations[i]);
+            
+            char cmd = st.nextToken().charAt(0);
             int num = Integer.parseInt(st.nextToken());
             
-            if(cmd == 'I') {
-                minHeap.offer(num);
-                maxHeap.offer(num);
+            if(cmd == 'I') { // 삽입
+                maxHeap.offer(Integer.valueOf(num));
+                minHeap.offer(Integer.valueOf(num));
             } else if(cmd == 'D') {
-                
-                if(minHeap.isEmpty()) {
-                   continue; 
+                if(num == 1) { // 최댓값 삭제
+                    minHeap.remove(maxHeap.poll());
+                } else if(num == -1) { // 최솟값 삭제
+                    maxHeap.remove(minHeap.poll());
                 }
-                
-                if(num == -1) {
-                    int min = minHeap.poll();
-                    maxHeap.remove(min);
-                } else if(num == 1) {
-                    int max = maxHeap.poll();
-                    minHeap.remove(max);
-                } 
             }
         }
         
-        if(minHeap.size() >= 1) {
-            answer[0] = maxHeap.peek();
-            answer[1] = minHeap.peek();
-        }
+        if(minHeap.isEmpty()) {
+            return new int[] {0, 0};
+        } 
         
-        return answer;
+        return new int[] {maxHeap.peek(), minHeap.peek()};
     }
 }
