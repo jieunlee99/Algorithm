@@ -3,54 +3,64 @@ import java.util.*;
 class Solution {
     
     class Job implements Comparable<Job> {
-        int requestTime; // 요청 시각
-        int duration; // 작업 종료 시간
+        int num, requestTime, workTime;
         
-        public Job(int requestTime, int duration) {
+        public Job(int num, int requestTime, int workTime) {
+            this.num = num;
             this.requestTime = requestTime;
-            this.duration = duration;
+            this.workTime = workTime;
         }
-
+        
         @Override
         public int compareTo(Job j) {
-            return this.duration - j.duration;
+            if(this.workTime == j.workTime) {
+                if(this.requestTime == j.requestTime) {
+                    return this.num - j.num;
+                }
+                return this.requestTime - j.requestTime;
+            }
+            return this.workTime - j.workTime;
         }
     }
     
     public int solution(int[][] jobs) {
-        // 'jobs'를 요청시간 오름차순으로 정렬
-        Arrays.sort(jobs, (j1, j2)->j1[0]-j2[0]);
         
+        // 요청 시간 순 정렬
+        Arrays.sort(jobs, (a, b)-> a[0] - b[0]);
+
         PriorityQueue<Job> pq = new PriorityQueue<>();
+      
+        int n = jobs.length;
         
-        int answer = 0;
-        int time = 0; // 현재 시간
-        int idx = 0; // jobs 배열의 인덱스
-        int cnt = 0; // 완료된 작업 수
+        int time = 0;
+        int index = 0;
+        int total = 0;
+        int completed = 0;
         
-        // 모든 작업이 완료될 때까지 진행
-        while(cnt < jobs.length) {
+        // 모든 작업 완료할 때까지 수행
+        while (completed < n) {
             
-            // 현재 시간(time) 이전에 들어온 모든 요청을 큐에 삽입
-            while(idx < jobs.length && jobs[idx][0] <= time) {
-                pq.offer(new Job(jobs[idx][0], jobs[idx][1]));
-                idx++;
+            // 요청 시간이 되면 작업 추가
+            while (index < n && jobs[index][0] <= time) {
+                pq.offer(new Job(index, jobs[index][0], jobs[index][1]));
+                index++;
             }
-            
-            // 대기열이 비었다면 다음 작업의 요청 시간으로 점프
-            if(pq.isEmpty()) {
-                time = jobs[idx][0];
+
+            // 현재 할 수 있는 작업 모두 수행
+            if (!pq.isEmpty()) {
+                Job current = pq.poll();
+                time += current.workTime;
+                total += time - current.requestTime;
+                completed++;
             } 
             
-            // 대기열에서 가장 소요 시간이 짧은 작업 수행
+            // 할 수 있는 작업이 없으면 다음 작업으로 시간 점프
             else {
-                Job current = pq.poll();
-                time += current.duration;
-                answer += (time - current.requestTime);
-                cnt++;
+                time = jobs[index][0];
             }
         }
-        
-        return answer / jobs.length;
+
+        // 전체 시간 / 작업 수
+        return total / jobs.length;
     }
 }
