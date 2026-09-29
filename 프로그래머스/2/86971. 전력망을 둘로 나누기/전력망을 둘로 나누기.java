@@ -2,48 +2,52 @@ import java.util.*;
 
 class Solution {
     
-    ArrayList<Integer>[] adjList;
+    int answer = Integer.MAX_VALUE;
+    
+    List<Integer>[] adjList;
+    boolean[] visited;
+    
+    int n;
+    int[][] wires;
     
     public int solution(int n, int[][] wires) {
-        int answer = Integer.MAX_VALUE;
         
-        adjList = new ArrayList[n+1];
-        for(int i=1; i<=n; i++) {
-            adjList[i] = new ArrayList<>();
-        }
+        this.n = n;
+        this.wires = wires;
         
-        for(int[] wire:wires) {
-            adjList[wire[0]].add(wire[1]);
-            adjList[wire[1]].add(wire[0]);
-        } 
-        
-        for(int[] wire:wires) {
-            int u = wire[0];
-            int v = wire[1];
-            
-            adjList[u].remove(Integer.valueOf(v));
-            adjList[v].remove(Integer.valueOf(u));
-            
-            int cnt1 = bfs(n, u);
-            int cnt2 = bfs(n, v);
-            answer = Math.min(answer, Math.abs(cnt1-cnt2));
-            
-            adjList[u].add(v);
-            adjList[v].add(u);
+        for(int i=0; i<n; i++) {
+            int one = bfs(i);
+            int two = n - one;
+            answer = Math.min(answer, Math.abs(one-two));
         }
         
         return answer;
     }
     
-    // 한 전력망에 몇 개의 송전탑이 연결되어 있는지 개수 반환
-    public int bfs(int n, int start) {
-        int cnt = 0;
+    public int bfs(int skip) {
         
-        Queue<Integer> queue = new LinkedList<>();
-        boolean[] visited = new boolean[n+1];
+        adjList = new ArrayList[n+1];
+        for(int i=0; i<=n; i++) {
+            adjList[i] = new ArrayList<>();
+        }
         
-        queue.offer(start);
-        visited[start] = true;
+        for(int i=1; i<=n; i++) {
+            adjList[0].add(i);
+        }
+        
+        visited = new boolean[n+1];
+        
+        for(int i=0; i<n-1; i++) {
+            if(i == skip) continue;
+            adjList[wires[i][0]].add(wires[i][1]);
+            adjList[wires[i][1]].add(wires[i][0]);
+        }
+        
+        Queue<Integer> queue = new ArrayDeque<>();
+        
+        int cnt = 1;
+        queue.offer(1);
+        visited[1] = true;
         
         while(!queue.isEmpty()) {
             int current = queue.poll();
