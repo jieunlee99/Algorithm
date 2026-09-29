@@ -2,34 +2,30 @@ import java.util.*;
 
 class Solution {
     
-    int answer = 0;
-    
-    List<String> list = new ArrayList<>();
-    String[] chars = { "A", "E", "I", "O", "U" };
+    List<String> list;
+    char[] alpha = {'A', 'E', 'I', 'O', 'U'};
     
     public int solution(String word) {
+        list = new ArrayList<>();
         
-        dfs("");
+        dfs(0, "");
         
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).equals(word)) {
-                answer = i;
-                break;
-            }
-        }
+        Collections.sort(list);
         
-        return answer;
+        return list.indexOf(word);
     }
     
-    private void dfs(String word) {
-        list.add(word);
+    public void dfs(int depth, String word) {
+        if(!list.contains(word)) {
+            list.add(word);
+        }
         
-        if (word.length() == 5) {
+        if(depth == 5) {
             return;
         }
         
-        for (int i = 0; i < 5; i++) {
-            dfs(word + chars[i]);
+        for(int i=0; i<5; i++) {
+            dfs(depth+1, word+alpha[i]);
         }
     }
 }
