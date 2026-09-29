@@ -1,27 +1,37 @@
 class Solution {
-    int answer = 0;
     
-    int n;
+    int[][] dungeons;
     boolean[] visited;
     
+    int n, k;
+    
+    int answer = Integer.MIN_VALUE;
+    
     public int solution(int k, int[][] dungeons) {
-        n = dungeons.length;
-        visited = new boolean[n];
+        this.n = dungeons.length;
+        this.dungeons = dungeons;
+        this.visited = new boolean[n];
         
-        dfs(dungeons, k, 0);
+        dfs(k, 0);
         
         return answer;
     }
     
-    public void dfs(int[][] dungeons, int k, int depth) {
-        for(int i=0; i<dungeons.length; i++) {
-            if(!visited[i] && k >= dungeons[i][0]) {
+    public void dfs(int current, int depth) {
+        if(depth > answer) {
+            answer = Math.max(depth, answer);
+        }
+        
+        if(depth == n) {
+            return;
+        }
+        
+        for(int i=0; i<n; i++) {
+            if(!visited[i] && dungeons[i][0] <= current) {
                 visited[i] = true;
-                dfs(dungeons, k-dungeons[i][1], depth+1);
+                dfs(current-dungeons[i][1], depth+1);
                 visited[i] = false;
             }
         }
-        
-        answer = Math.max(depth, answer);
     }
 }
