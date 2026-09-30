@@ -2,58 +2,53 @@ import java.util.*;
 
 class Solution {
     
-    boolean[] visited;
-    
-    class Info {
-        String word; // 현재 단어
-        int cnt; // 변환 횟수
+    int answer = Integer.MAX_VALUE;
 
-        public Info(String word, int cnt) {
-            this.word = word;
-            this.cnt = cnt;
-        }
-    }
+    boolean[] visited;
+    int n;
+    
+    String target;
+    String[] words;
     
     public int solution(String begin, String target, String[] words) {
-        int answer = Integer.MAX_VALUE;
+        this.target = target;
+        this.words = words;
         
-        int n = words.length;
+        n = words.length;
         visited = new boolean[n];
         
-        Queue<Info> queue = new LinkedList<>();
-        queue.offer(new Info(begin, 0));
-        
-        while(!queue.isEmpty()) {
-            Info current = queue.poll();
-            
-            if(current.word.equals(target)) {
-                answer = Math.min(answer, current.cnt);
-            }
-            
-            for(int i=0; i<n; i++) {
-                if(!visited[i] && canChange(current.word, words[i])) {
-                    visited[i] = true;
-                    queue.offer(new Info(words[i], current.cnt+1));
-                }
-            }
-        }
-        
-        if(answer == Integer.MAX_VALUE) {
-            return 0;
-        }
+        dfs(begin, 0);
+
+        if(answer == Integer.MAX_VALUE) return 0;
         return answer;
     }
     
-    public boolean canChange(String from, String to) {
-        int diff = 0;
+    public void dfs(String current, int depth) {
+        if(current.equals(target)) {
+            answer = Math.min(depth, answer);
+        }
         
-        int len = from.length();
-        for(int i=0; i<len; i++) {
-            if(from.charAt(i) != to.charAt(i)) {
-                diff++;
-                if(diff > 1) {
-                    return false;
-                }
+        if(depth == n) {
+            return;
+        }
+        
+        for(int i=0; i<n; i++) {
+            if(!visited[i] && canConvert(current, words[i])) {
+                visited[i] = true;
+                dfs(words[i], depth+1);
+                visited[i] = false;
+            }
+        }
+    }
+    
+    // a -> b 가능한지 확인
+    public boolean canConvert(String a, String b) {
+        int cnt = 0;
+        for(int i=0; i<a.length(); i++) {
+            if(a.charAt(i) != b.charAt(i)) {
+                cnt++;
+                
+                if(cnt >= 2) return false;
             }
         }
         
