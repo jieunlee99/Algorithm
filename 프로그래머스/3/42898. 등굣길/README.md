@@ -4,7 +4,7 @@
 
 ### 성능 요약
 
-메모리: 54.8 MB, 시간: 0.81 ms
+메모리: 57.7 MB, 시간: 0.56 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 01월 29일 14:55:26
+2026년 09월 30일 15:25:51
 
 ### 문제 설명
 
@@ -24,7 +24,7 @@
 
 <p>아래 그림은 m = 4, n = 3 인 경우입니다.</p>
 
-<p><img src="https://grepp-programmers.s3.amazonaws.com/files/ybm/056f54e618/f167a3bc-e140-4fa8-a8f8-326a99e0f567.png" title="" alt="image0.png"></p>
+<p><img src="https://asset.programmers.co.kr/files/ybm/056f54e618/f167a3bc-e140-4fa8-a8f8-326a99e0f567.png" title="" alt="image0.png"></p>
 
 <p>가장 왼쪽 위, 즉 집이 있는 곳의 좌표는 (1, 1)로 나타내고 가장 오른쪽 아래, 즉 학교가 있는 곳의 좌표는 (m, n)으로 나타냅니다. </p>
 
@@ -61,7 +61,7 @@
       </table>
 <h5>입출력 예 설명</h5>
 
-<p><img src="https://grepp-programmers.s3.amazonaws.com/files/ybm/32c67958d5/729216f3-f305-4ad1-b3b0-04c2ba0b379a.png" title="" alt="image1.png"></p>
+<p><img src="https://asset.programmers.co.kr/files/ybm/32c67958d5/729216f3-f305-4ad1-b3b0-04c2ba0b379a.png" title="" alt="image1.png"></p>
 
 
 > 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
