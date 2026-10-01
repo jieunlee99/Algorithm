@@ -4,25 +4,14 @@
 using namespace std;
 
 string solution(string my_string) {
-    while(my_string.find("a") != string::npos) {
-        my_string.replace(my_string.find("a"), 1, "");
+    string answer = "";
+    for(int i=0; i<my_string.size(); i++) {
+        char c = my_string.at(i);
+        if(c != 'a' && c != 'e' && 
+           c != 'i' && c != 'o' && 
+           c != 'u') {
+            answer.push_back(c);
+        }
     }
-
-    while(my_string.find("e") != string::npos) {
-        my_string.replace(my_string.find("e"), 1, "");
-    }
-
-    while(my_string.find("i") != string::npos) {
-        my_string.replace(my_string.find("i"), 1, "");
-    }
-
-    while(my_string.find("o") != string::npos) {
-        my_string.replace(my_string.find("o"), 1, "");
-    }
-
-    while(my_string.find("u") != string::npos) {
-        my_string.replace(my_string.find("u"), 1, "");
-    }
-    
-    return my_string;
+    return answer;
 }
