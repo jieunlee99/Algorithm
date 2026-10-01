@@ -1,14 +1,9 @@
 #include <string>
 #include <vector>
+#include <numeric>
 
 using namespace std;
 
 double solution(vector<int> numbers) {
-    double sum = 0;
-    
-    for(int number:numbers) {
-        sum += number;
-    }
-    
-    return sum / numbers.size();
+    return accumulate(numbers.begin(), numbers.end(), 0.0) / numbers.size();
 }
