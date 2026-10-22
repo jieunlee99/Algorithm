@@ -2,35 +2,39 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String msg) {
-        Map<String, Integer> map = new HashMap<>();
+        int idx = 1;
         
-        int nextIndex = 1;
-        for (int i = 0; i < 26; i++) {
-            map.put(String.valueOf((char)('A' + i)), nextIndex++);
+        // A~Z 넣기 
+        Map<String, Integer> dict = new HashMap<>();
+        for(char c='A'; c<='Z'; c++) {
+            dict.put(String.valueOf(c), idx++);
         }
         
-        List<Integer> ansList = new ArrayList<>();
-        int i = 0;
+        List<Integer> list = new ArrayList<>();
         
-        while (i < msg.length()) {
-            String w = "";
-            int j = i;
+        int n = msg.length();
+        
+        for(int i=0; i<n; i++) {
+            String word = "";
             
-            while (j < msg.length() && map.containsKey(msg.substring(i, j + 1))) {
-                w = msg.substring(i, j + 1);
-                j++;
+            // 현재 입력과 일치하는 가장 긴 문자열 w 찾기
+            while (i < n && dict.containsKey(word + msg.charAt(i))) {
+                word += msg.charAt(i);
+                i++;
             }
+
+            // 정답에 추가
+            list.add(dict.get(word));
             
-            ansList.add(map.get(w));
             
-            if (j < msg.length()) {
-                String wc = msg.substring(i, j + 1);
-                map.put(wc, nextIndex++);
+            // 입력에서 처리되지 않은 다음 글자가 남아있다면(c), w+c에 해당하는 단어 사전에 등록
+            if (i < n) {
+                dict.put(word + msg.charAt(i), idx);
+                idx++;
+                i--;
             }
-            
-            i += w.length();
         }
         
-        return ansList.stream().mapToInt(Integer::intValue).toArray();
+        return list.stream().mapToInt(i->i).toArray();
     }
 }
