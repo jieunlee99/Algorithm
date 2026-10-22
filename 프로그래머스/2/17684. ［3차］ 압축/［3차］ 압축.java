@@ -15,6 +15,7 @@ class Solution {
         int n = msg.length();
         
         for(int i=0; i<n; i++) {
+            
             String word = "";
             
             // 현재 입력과 일치하는 가장 긴 문자열 w 찾기
