@@ -1,35 +1,50 @@
 import java.util.*;
 
 class Solution {
-    
-    // record[i] = {cmd, id, nickname}
-    // cmd = Enter, Leave, Change
     public String[] solution(String[] record) {
-        List<String> list = new ArrayList<>();
-        
-        // <id, nickname>
-        Map<String, String> map = new HashMap<>();
-        
-        for(int i=0; i<record.length; i++) {
-            String[] arr = record[i].split(" ");
-            
-            if(arr[0].equals("Enter")) {
-                map.put(arr[1], arr[2]);
-            } else if(arr[0].equals("Change")) {
-                map.put(arr[1], arr[2]);
+        Map<String, String> idMap = new HashMap<>(); // uid, nickname
+        List<String[]> history = new ArrayList<>(); // uid, Enter/Leave
+
+        for (String r : record) {
+            StringTokenizer st = new StringTokenizer(r, " ");
+
+            String cmd = st.nextToken();
+            String uid = st.nextToken();
+
+            if (cmd.equals("Enter")) {
+                String nickname = st.nextToken();
+
+                idMap.put(uid, nickname);
+                history.add(new String[]{uid, cmd});
+            }
+
+            else if (cmd.equals("Leave")) {
+                history.add(new String[]{uid, cmd});
+            }
+
+            else if (cmd.equals("Change")) {
+                String nickname = st.nextToken();
+
+                idMap.put(uid, nickname);
             }
         }
-        
-        for(int i=0; i<record.length; i++) {
-            String[] arr = record[i].split(" ");
-            
-            if(arr[0].equals("Enter")) {
-                list.add(map.get(arr[1])+"님이 들어왔습니다.");
-            } else if(arr[0].equals("Leave")) {
-                list.add(map.get(arr[1])+"님이 나갔습니다.");
+
+        String[] result = new String[history.size()];
+
+        for (int i = 0; i < history.size(); i++) {
+            String[] log = history.get(i);
+
+            String uid = log[0];
+            String cmd = log[1];
+            String nickname = idMap.get(uid);
+
+            if (cmd.equals("Enter")) {
+                result[i] = nickname + "님이 들어왔습니다.";
+            } else {
+                result[i] = nickname + "님이 나갔습니다.";
             }
         }
-        
-        return list.toArray(new String[list.size()]);
+
+        return result;
     }
 }
