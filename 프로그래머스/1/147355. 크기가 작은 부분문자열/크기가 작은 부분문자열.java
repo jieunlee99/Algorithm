@@ -2,16 +2,19 @@ class Solution {
     public int solution(String t, String p) {
         int answer = 0;
         
-        int tLen = t.length();
-        int pLen = p.length();
         long pNum = Long.parseLong(p);
+        int len = p.length();
         
-        for(int i=0; i<=tLen-pLen; i++) {
-            long num = Long.parseLong(t.substring(i, i+pLen));
-            if(num <= pNum) {
+        for(int i=0; i<t.length()-len+1; i++) {
+            String sub = t.substring(i, i+len);
+            
+            long subNum = Long.parseLong(sub);
+            
+            if(subNum <= pNum) {
                 answer++;
             }
         }
+        
         return answer;
     }
 }
