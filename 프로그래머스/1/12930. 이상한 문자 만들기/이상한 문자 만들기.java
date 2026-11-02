@@ -5,16 +5,18 @@ class Solution {
         int cnt = 0;
         
         for(int i=0; i<s.length(); i++) {
-            if(s.charAt(i) == ' ') {
-                sb.append(' ');
+            char c = s.charAt(i);
+            
+            if(c == ' ') {
+                sb.append(c);
                 cnt = 0;
                 continue;
             }
             
             if(cnt%2 == 0) {
-                sb.append(String.valueOf(s.charAt(i)).toUpperCase());
+                sb.append(String.valueOf(c).toUpperCase());
             } else {
-                sb.append(String.valueOf(s.charAt(i)).toLowerCase());
+                sb.append(String.valueOf(c).toLowerCase());
             }
             cnt++;
         }
